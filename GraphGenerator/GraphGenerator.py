@@ -43,20 +43,29 @@ if __name__ == "__main__":
     randomGraph = nx.erdos_renyi_graph(size, density)
     if args.none:
         log.log("no additional graphs.")
+        appender = "_none"
     elif args.k5:
         log.log("K5 selected.")
         pairs = randomK5(randomGraph)
+        appender = "_K5"
     elif args.k33:
         log.log("K33 selected.")
         pairs = randomK33(randomGraph)
+        appender = "_K33"
     else:
-        pass
+        log.log("No mode selected")
+        exit(1)
     matrix = nx.adjacency_matrix(randomGraph).toarray()
-    file_object = open("graph.txt", "w")
+    print(matrix.__str__())
+    size_appender = "_"+size.__str__()
+    hash=matrix.__str__().__hash__()
+    file_object = open("graph{0}{1}{2}.txt".format(hash,size_appender, appender), "w")
+    file_object.write(size.__str__() + "\n")
     for row in matrix:
-        file_object.write(row.__str__()[1:len(row)-1]+"\n")
+        newLine = row.__str__().replace("\n", "")
+        file_object.write(newLine[1:len(newLine)-1]+"\n")
     file_object.close()
-    log.log("file [ " + "graph.txt" + " ] created.")
+    log.log("file [ " + file_object.name.__str__() + " ] created.")
 
 
 
