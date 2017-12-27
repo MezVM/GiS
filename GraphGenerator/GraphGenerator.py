@@ -6,69 +6,86 @@ import itertools
 import argparse
 
 def randomK5(G):
-    log = Logger("K5")
-    log.log("Generowanie wierzcholkow.")
+    # log = Logger("K5")
+    # log.log("Generowanie wierzcholkow.")
     candidates = random.sample(G.nodes, 5)
-    log.log("Kandydaci: " + candidates.__str__())
+    # log.log("Kandydaci: " + candidates.__str__())
     pairs = list(itertools.combinations(candidates, 2))
-    log.log("Krawędzie: " + pairs.__str__())
+    # log.log("Krawędzie: " + pairs.__str__())
     G.add_edges_from(pairs)
-    log.log("Krawędzie dodano.")
+    # log.log("Krawędzie dodano.")
     return pairs
 
 def randomK33(G):
-    log = Logger("K33")
-    log.log("Generowanie wierzcholkow.")
+    # log = Logger("K33")
+    # log.log("Generowanie wierzcholkow.")
     candidates = set(random.sample(G.nodes, 6))
     firstSet = random.sample(candidates, 3)
     secondSet = candidates.difference(firstSet)
-    log.log("Kandydaci: s1:" + firstSet.__str__()+ " s2: "+secondSet.__str__())
+    # log.log("Kandydaci: s1:" + firstSet.__str__()+ " s2: "+secondSet.__str__())
     pairs = set(itertools.product(firstSet, secondSet))
-    log.log("Krawędzie: " + pairs.__str__())
+    # log.log("Krawędzie: " + pairs.__str__())
     G.add_edges_from(pairs)
-    log.log("Krawędzie dodano.")
+    # log.log("Krawędzie dodano.")
     return pairs
+
+# if __name__ == "__main__":
+#     log = Logger("Main")
+#     parser = argparse.ArgumentParser(description='Create graphs.')
+#     parser.add_argument('size', help="number of nodes.", type=int)
+#     parser.add_argument('dens', help="density of edges.", type=float)
+#     parser.add_argument('--none', help="none", action="store_true")
+#     parser.add_argument('--k5', help="k5", action="store_true")
+#     parser.add_argument('--k33', help="k33", action="store_true")
+#     args = parser.parse_args()
+#     density = args.dens
+#     size = args.size
+#     randomGraph = nx.erdos_renyi_graph(size, density)
+#     if args.none:
+#         log.log("no additional graphs.")
+#         appender = "_none"
+#     elif args.k5:
+#         log.log("K5 selected.")
+#         pairs = randomK5(randomGraph)
+#         appender = "_K5"
+#     elif args.k33:
+#         log.log("K33 selected.")
+#         pairs = randomK33(randomGraph)
+#         appender = "_K33"
+#     else:
+#         log.log("No mode selected")
+#         exit(1)
+#     matrix = nx.adjacency_matrix(randomGraph).toarray()
+#     print(matrix.__str__())
+#     size_appender = "_"+size.__str__()
+#     hash=matrix.__str__().__hash__()
+#     file_object = open("graph{0}{1}{2}.txt".format(hash,size_appender, appender), "w")
+#     file_object.write(size.__str__() + "\n")
+#     for row in matrix:
+#         newLine = row.__str__().replace("\n", "")
+#         file_object.write(newLine[1:len(newLine)-1]+"\n")
+#     file_object.close()
+#     log.log("file [ " + file_object.name.__str__() + " ] created.")
 
 if __name__ == "__main__":
     log = Logger("Main")
-    parser = argparse.ArgumentParser(description='Create graphs.')
-    parser.add_argument('size', help="number of nodes.", type=int)
-    parser.add_argument('dens', help="density of edges.", type=float)
-    parser.add_argument('--none', help="none", action="store_true")
-    parser.add_argument('--k5', help="k5", action="store_true")
-    parser.add_argument('--k33', help="k33", action="store_true")
-    args = parser.parse_args()
-    density = args.dens
-    size = args.size
-    randomGraph = nx.erdos_renyi_graph(size, density)
-    if args.none:
-        log.log("no additional graphs.")
-        appender = "_none"
-    elif args.k5:
-        log.log("K5 selected.")
-        pairs = randomK5(randomGraph)
-        appender = "_K5"
-    elif args.k33:
-        log.log("K33 selected.")
+    appender = "_K33"
+    for i in range(0, 250):
+        size = random.randrange(200, 2000, 1)
+        density = round(random.uniform(0.1, 0.25),2)
+        randomGraph = nx.erdos_renyi_graph(size, density)
         pairs = randomK33(randomGraph)
-        appender = "_K33"
-    else:
-        log.log("No mode selected")
-        exit(1)
-    matrix = nx.adjacency_matrix(randomGraph).toarray()
-    print(matrix.__str__())
-    size_appender = "_"+size.__str__()
-    hash=matrix.__str__().__hash__()
-    file_object = open("graph{0}{1}{2}.txt".format(hash,size_appender, appender), "w")
-    file_object.write(size.__str__() + "\n")
-    for row in matrix:
-        newLine = row.__str__().replace("\n", "")
-        file_object.write(newLine[1:len(newLine)-1]+"\n")
-    file_object.close()
-    log.log("file [ " + file_object.name.__str__() + " ] created.")
-
-
-
+        matrix = nx.adjacency_matrix(randomGraph).toarray()
+        # print(matrix.__str__())
+        size_appender = "_size-"+size.__str__()+"_dens-"+density.__str__()
+        hash=i.__str__()
+        file_object = open("k33/graph{0}{1}{2}.txt".format(hash,size_appender, appender), "w")
+        file_object.write(size.__str__() + "\n")
+        for row in matrix:
+            newLine = row.__str__().replace("\n", "")
+            file_object.write(newLine[1:len(newLine)-1]+"\n")
+        file_object.close()
+        log.log("file [ " + file_object.name.__str__() + " ] created. ["+i.__str__()+"/250]")
 
 
 
