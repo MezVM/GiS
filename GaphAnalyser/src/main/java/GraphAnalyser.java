@@ -15,7 +15,6 @@ public class GraphAnalyser {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        System.out.print(result);
     }
 
     public boolean specifyPlanarity(String filePath) throws FileNotFoundException {
@@ -28,8 +27,34 @@ public class GraphAnalyser {
     }
 
     private SimpleMatrix optimalizeMatrix(SimpleMatrix matrix) {
-        //TODO
-        return null;
+        matrix = removeSelfLoops(matrix);
+        matrix = removeParallelEdges(matrix);
+        matrix = removeSecondDegreeNodes(matrix);
+        return matrix;
+    }
+
+    private SimpleMatrix removeSecondDegreeNodes(SimpleMatrix matrix) {
+        return NodeRemover.removeFirstAndSecondDegree(matrix);
+    }
+
+    private SimpleMatrix removeParallelEdges(SimpleMatrix matrix) {
+        int numRows = matrix.numRows();
+        int numCols = matrix.numCols();
+        for (int i = 0; i < numRows; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if(matrix.get(i,j) >1)
+                    matrix.set(i,j,1);
+            }
+        }
+        return matrix;
+    }
+
+    private SimpleMatrix removeSelfLoops(SimpleMatrix matrix) {
+        int numRows = matrix.numRows();
+        for (int i = 0; i < numRows; i++) {
+            matrix.set(i,i,0);
+        }
+        return matrix;
     }
 
     private boolean findK33(SimpleMatrix matrix) {

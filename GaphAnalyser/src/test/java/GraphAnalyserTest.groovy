@@ -7,6 +7,7 @@ import spock.lang.Unroll
 class GraphAnalyserTest extends Specification {
 
     private static String noneTypefilePath = "src\\test\\resources\\none.txt"
+    private static String toReduceTypeFilePath = "src\\test\\resources\\toReduce.txt"
     private static String k5filePath = "none.txt"
     private static String k33filePath = "none.txt"
     private GraphAnalyser analyser
@@ -26,6 +27,16 @@ class GraphAnalyserTest extends Specification {
             SimpleMatrix example = new SimpleMatrix(data)
         when:
             SimpleMatrix output = analyser.readFile(noneTypefilePath)
+        then:
+            compareMatrixes(example, output)
+    }
+
+    def "shuld optimalize graph to one cell"() {
+        given:
+            SimpleMatrix example = new SimpleMatrix(0,0)
+            SimpleMatrix input = analyser.readFile(toReduceTypeFilePath)
+        when:
+            SimpleMatrix output = analyser.optimalizeMatrix(input)
         then:
             compareMatrixes(example, output)
     }
