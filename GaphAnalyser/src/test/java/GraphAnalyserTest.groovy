@@ -8,6 +8,7 @@ class GraphAnalyserTest extends Specification {
 
     private static String noneTypefilePath = "src\\test\\resources\\none.txt"
     private static String toReduceTypeFilePath = "src\\test\\resources\\toReduce.txt"
+    private static String toReduceTypeFilePath1 = "src\\test\\resources\\toReduce1.txt"
     private static String k5filePath = "none.txt"
     private static String k33filePath = "none.txt"
     private GraphAnalyser analyser
@@ -35,6 +36,20 @@ class GraphAnalyserTest extends Specification {
         given:
             SimpleMatrix example = new SimpleMatrix(0,0)
             SimpleMatrix input = analyser.readFile(toReduceTypeFilePath)
+        when:
+            SimpleMatrix output = analyser.optimalizeMatrix(input)
+        then:
+            compareMatrixes(example, output)
+    }
+
+    def "shuld optimalize graph"() {
+        given:
+            double[][] data = [[0,1,1,1],
+                               [1,0,1,1],
+                               [1,1,0,1],
+                               [1,1,1,0]]
+            SimpleMatrix example = new SimpleMatrix(data)
+            SimpleMatrix input = analyser.readFile(toReduceTypeFilePath1)
         when:
             SimpleMatrix output = analyser.optimalizeMatrix(input)
         then:
