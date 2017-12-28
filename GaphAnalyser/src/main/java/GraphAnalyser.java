@@ -1,7 +1,6 @@
 import org.ejml.simple.SimpleMatrix;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 
 public class GraphAnalyser {
 
@@ -18,8 +17,7 @@ public class GraphAnalyser {
     }
 
     public boolean specifyPlanarity(String filePath) throws FileNotFoundException {
-        File file = loadGraphFile(filePath);
-        SimpleMatrix matrix = extractAdjacencyMatrix(file);
+        SimpleMatrix matrix = readFile(filePath);
         matrix = optimalizeMatrix(matrix);
         boolean isFound;
         isFound = findK5(matrix);
@@ -47,8 +45,30 @@ public class GraphAnalyser {
         return null;
     }
 
-    private File loadGraphFile(String filePath) {
-        //TODO
-        return null;
+    private SimpleMatrix readFile(String filePath) throws FileNotFoundException {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            String stringCurrentLine;
+            int size = 0;
+
+            if((stringCurrentLine = br.readLine()) != null)
+                size = Integer.parseInt(stringCurrentLine);
+            SimpleMatrix matrix = new SimpleMatrix(size,size);
+            int i = 0, j = 0;
+            while ((stringCurrentLine = br.readLine()) != null) {
+                String[] row = stringCurrentLine.split(" ");
+                for (String element : row) {
+                    int value = Integer.parseInt(element);
+                    matrix.set(i,j,value);
+                    j++;
+                }
+                i++;
+                j = 0;
+            }
+            return matrix;
+        } catch (IOException e) {
+            throw new FileNotFoundException("Path: "+filePath);
+        }
     }
 }
