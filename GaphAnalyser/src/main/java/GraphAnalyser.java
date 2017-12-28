@@ -4,6 +4,8 @@ import java.io.*;
 
 public class GraphAnalyser {
 
+    public static final String SEPARATION_REGEX = " ";
+
     public static void main(String[] args) {
         String filePath = "";
         GraphAnalyser graphAnalyser = GaphAnalysersFactory.create();
@@ -40,27 +42,20 @@ public class GraphAnalyser {
         return false;
     }
 
-    private SimpleMatrix extractAdjacencyMatrix(File file) {
-        //TODO
-        return null;
-    }
-
     private SimpleMatrix readFile(String filePath) throws FileNotFoundException {
-
         try {
-            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
             String stringCurrentLine;
             int size = 0;
 
-            if((stringCurrentLine = br.readLine()) != null)
+            if ((stringCurrentLine = bufferedReader.readLine()) != null)
                 size = Integer.parseInt(stringCurrentLine);
-            SimpleMatrix matrix = new SimpleMatrix(size,size);
+            SimpleMatrix matrix = new SimpleMatrix(size, size);
+
             int i = 0, j = 0;
-            while ((stringCurrentLine = br.readLine()) != null) {
-                String[] row = stringCurrentLine.split(" ");
-                for (String element : row) {
-                    int value = Integer.parseInt(element);
-                    matrix.set(i,j,value);
+            while ((stringCurrentLine = bufferedReader.readLine()) != null) {
+                for (String element : stringCurrentLine.split(SEPARATION_REGEX)) {
+                    matrix.set(i, j, Integer.parseInt(element));
                     j++;
                 }
                 i++;
@@ -68,7 +63,7 @@ public class GraphAnalyser {
             }
             return matrix;
         } catch (IOException e) {
-            throw new FileNotFoundException("Path: "+filePath);
+            throw new FileNotFoundException("Path: " + filePath);
         }
     }
 }
