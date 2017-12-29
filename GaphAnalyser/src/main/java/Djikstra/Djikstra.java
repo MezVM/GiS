@@ -1,10 +1,8 @@
 package Djikstra;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Djikstra {
 
@@ -14,25 +12,25 @@ public class Djikstra {
 
     public List<Integer> findPathBetween(RealMatrix matrix, int startNode, int targetNode) {
         this.targetNode = targetNode;
-        currentState = initBeginState(matrix);
+        currentState = initBeginState(matrix, startNode);
         predecessors = initPredecesors(matrix);
         int currentNode = startNode;
         do {
             List<Successor> successors = findNeightbours(matrix, currentNode);
-            upadateCurrentState(successors);
-            updatePredecesors(successors, currentNode);
+            upadateCurrentStateAndPredecessors(successors, currentNode);
             currentNode = lockLowestValueAndSelectNewNode();
         } while (!targetsLocked());
         return findPath(startNode);
     }
 
     private List<Integer> findPath(int startNode) {
-        Predecessor predecessor = findPredecesor(targetNode);
+        Predecessor predecessor = findPredecesor(targetNode).getPredecesor();
         List<Integer> path = new LinkedList<>();
         while (predecessor.id() != startNode) {
             path.add(predecessor.id());
             predecessor = predecessor.getPredecesor();
         }
+        Collections.reverse(path);
         return path;
     }
 
@@ -49,11 +47,9 @@ public class Djikstra {
         return state.id();
     }
 
-    private void updatePredecesors(List<Successor> successors, int currentNode) {
+    private void updatePredecesor(Successor successor, int currentNode) {
         Predecessor currentPredecesor = findPredecesor(currentNode);
-        successors.stream()
-                .map(successor -> findPredecesor(successor))
-                .forEach(predecessor -> predecessor.setPredecesor(currentPredecesor));
+        findPredecesor(successor).setPredecesor(currentPredecesor);
     }
 
     private Predecessor findPredecesor(int currentNode) {
@@ -79,31 +75,55 @@ public class Djikstra {
         return predecessors;
     }
 
-    private void upadateCurrentState(List<Successor> successors) throws RuntimeException {
-        successors.forEach(this::findAndUpdateStateForSuccesor);
+    private void upadateCurrentStateAndPredecessors(List<Successor> successors, int currentNode) {
+        Successor currentSuccessor = findSuccesor(currentNode);
+        successors.forEach(successor -> findAndUpdateStateForSuccesor(successor,currentSuccessor));
     }
 
-    private void findAndUpdateStateForSuccesor(Successor successor){
-        Optional<Successor> lookingState = currentState.stream()
-                                                       .filter(state -> state.id() == successor.id())
-                                                       .findFirst();
-        lookingState.ifPresent(state -> state.addCost(successor.cost()));
+    private Successor findSuccesor(int currentNode) {
+        return currentState.stream()
+                .filter(successor -> successor.id() == currentNode)
+                .findFirst()
+                .get();
+    }
+
+    private void findAndUpdateStateForSuccesor(Successor successor, Successor currentSuccessor){
+        Successor lookingState = currentState.stream()
+                .filter(state -> state.id() == successor.id())
+                .findFirst()
+                .get();
+        if (lookingState.isLock())
+            return;
+        if (currentSuccessor.cost() + successor.cost() <= lookingState.cost()) {
+            lookingState.addCost(successor.cost());
+            updatePredecesor(successor, currentSuccessor.id());
+        } else {
+            int a = 1+2;
+        }
     }
 
     private List<Successor> findNeightbours(RealMatrix matrix, int currentNode) {
-        Double[] objectIndexes = ArrayUtils.toObject(matrix.getColumn(currentNode));
-        List<Double> nodes = Arrays.asList(objectIndexes);
-        return nodes.stream()
-                    .filter(node -> node.intValue() == 1)
-                    .map(aDouble -> new Successor(aDouble.intValue(),1))
-                    .collect(Collectors.toList());
+        double[] nodes = matrix.getColumn(currentNode);
+        List<Successor> neightbours = new LinkedList<Successor>();
+        for (int i = 0; i < matrix.getColumnDimension(); i++) {
+            if(nodes[i] == 1) {
+                neightbours.add(new Successor(i,1));
+            }
+        }
+        return neightbours;
     }
 
-    private List<Successor> initBeginState(RealMatrix matrix) {
+    private List<Successor> initBeginState(RealMatrix matrix, int startNode) {
         LinkedList<Successor> newState = new LinkedList<Successor>();
         int size = matrix.getColumnDimension();
         for (int i = 0; i < size; i++) {
-            newState.add(new Successor(i));
+            if (i == startNode) {
+                Successor successor = new Successor(i, 1);
+                successor.lock();
+                newState.add(successor);
+            } else {
+                newState.add(new Successor(i));
+            }
         }
         return newState;
     }
