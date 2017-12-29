@@ -1,22 +1,25 @@
-import org.ejml.simple.SimpleMatrix;
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.LinkedList;
 import java.util.List;
 
 class NodeRemover {
-    static SimpleMatrix removeFirstAndSecondDegree(SimpleMatrix matrix) {
+    static RealMatrix removeFirstAndSecondDegree(RealMatrix matrix) {
         List<Integer> toDelete = new LinkedList<Integer>();
         do {
             toDelete.clear();
-            int numCols = matrix.numCols();
+            int numCols = matrix.getColumnDimension();
+            if (numCols == 1)
+                return matrix;
             for (int columnIndex = 0; columnIndex < numCols; columnIndex++) {
                 List<Integer> neightbours = nodeNeightbours(matrix, columnIndex);
                 if (neightbours.size() == 2) {
                     toDelete.add(columnIndex);
                     Integer firstNeighbour = neightbours.get(0);
                     Integer secondNeighbour = neightbours.get(1);
-                    matrix.set(firstNeighbour, secondNeighbour, 1);
-                    matrix.set(secondNeighbour, firstNeighbour, 1);
+                    matrix.setEntry(firstNeighbour, secondNeighbour, 1);
+                    matrix.setEntry(secondNeighbour, firstNeighbour, 1);
                     break;
                 }
                 if (neightbours.size() <= 1) {
@@ -29,11 +32,11 @@ class NodeRemover {
         return matrix;
     }
 
-    private static SimpleMatrix removeNodes(SimpleMatrix matrix, List<Integer> toDelete) {
-        int newSize = matrix.numRows()-toDelete.size();
+    private static RealMatrix removeNodes(RealMatrix matrix, List<Integer> toDelete) {
+        int newSize = matrix.getRowDimension()-toDelete.size();
         List<List<Integer>> newRows = new LinkedList<List<Integer>>();
-        int numRows = matrix.numRows();
-        int numCols = matrix.numCols();
+        int numRows = matrix.getRowDimension();
+        int numCols = matrix.getColumnDimension();
 
         for (int i = 0; i < numRows; i++) {
             if(toDelete.contains(i))
@@ -41,7 +44,7 @@ class NodeRemover {
             List<Integer> newColumns = new LinkedList<Integer>();
             for (int j = 0; j < numCols; j++) {
                 if(!toDelete.contains(j)) {
-                    newColumns.add((int) matrix.get(i,j));
+                    newColumns.add((int) matrix.getEntry(i,j));
                 }
             }
             newRows.add(newColumns);
@@ -49,21 +52,25 @@ class NodeRemover {
         return convertToMatrix(newSize, newRows);
     }
 
-    private static SimpleMatrix convertToMatrix(int newSize, List<List<Integer>> newRows) {
-        SimpleMatrix newMatrix = new SimpleMatrix(newSize,newSize);
+    private static RealMatrix convertToMatrix(int newSize, List<List<Integer>> newRows) {
+        RealMatrix newMatrix;
+        if (newSize != 0)
+            newMatrix = MatrixUtils.createRealMatrix(newSize,newSize);
+        else
+            newMatrix = MatrixUtils.createRealMatrix(1,1);
         for (int i = 0; i < newSize; i++) {
             for (int j = 0; j < newSize; j++) {
-                newMatrix.set(i,j,newRows.get(i).get(j));
+                newMatrix.setEntry(i,j,newRows.get(i).get(j));
             }
         }
         return newMatrix;
     }
 
-    private static List<Integer> nodeNeightbours(SimpleMatrix matrix, int columnIndex) {
-        int numRows = matrix.numRows();
+    private static List<Integer> nodeNeightbours(RealMatrix matrix, int columnIndex) {
+        int numRows = matrix.getRowDimension();
         List<Integer> neightobours = new LinkedList<Integer>();
         for (int i = 0; i < numRows; i++) {
-            if(matrix.get(i, columnIndex)>0)
+            if(matrix.getEntry(i, columnIndex)>0)
                 neightobours.add(i);
         }
         return neightobours;

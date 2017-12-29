@@ -1,4 +1,5 @@
-import org.ejml.simple.SimpleMatrix;
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
 
 import java.io.*;
 
@@ -18,7 +19,7 @@ public class GraphAnalyser {
     }
 
     public boolean specifyPlanarity(String filePath) throws FileNotFoundException {
-        SimpleMatrix matrix = readFile(filePath);
+        RealMatrix matrix = readFile(filePath);
         matrix = optimalizeMatrix(matrix);
         boolean isFound;
         isFound = findK5(matrix);
@@ -26,48 +27,49 @@ public class GraphAnalyser {
         return !isFound;
     }
 
-    private SimpleMatrix optimalizeMatrix(SimpleMatrix matrix) {
+    private RealMatrix optimalizeMatrix(RealMatrix matrix) {
         matrix = removeSelfLoops(matrix);
         matrix = removeParallelEdges(matrix);
         matrix = removeSecondDegreeNodes(matrix);
         return matrix;
     }
 
-    private SimpleMatrix removeSecondDegreeNodes(SimpleMatrix matrix) {
+    private RealMatrix removeSecondDegreeNodes(RealMatrix matrix) {
         return NodeRemover.removeFirstAndSecondDegree(matrix);
     }
 
-    private SimpleMatrix removeParallelEdges(SimpleMatrix matrix) {
-        int numRows = matrix.numRows();
-        int numCols = matrix.numCols();
+    private RealMatrix removeParallelEdges(RealMatrix matrix) {
+        int numRows = matrix.getRowDimension();
+        int numCols = matrix.getColumnDimension();
         for (int i = 0; i < numRows; i++) {
             for (int j = 0; j < numCols; j++) {
-                if(matrix.get(i,j) >1)
-                    matrix.set(i,j,1);
+                if(matrix.getEntry(i,j) >1)
+                    matrix.setEntry(i,j,1);
             }
         }
         return matrix;
     }
 
-    private SimpleMatrix removeSelfLoops(SimpleMatrix matrix) {
-        int numRows = matrix.numRows();
+    private RealMatrix removeSelfLoops(RealMatrix matrix) {
+        int numRows = matrix.getRowDimension();
         for (int i = 0; i < numRows; i++) {
-            matrix.set(i,i,0);
+            matrix.setEntry(i,i,0);
         }
         return matrix;
     }
 
-    private boolean findK33(SimpleMatrix matrix) {
+    private boolean findK33(RealMatrix matrix) {
+        //TODO
+//        Djikstra.findPathBetween(matrix,0,1);
+        return false;
+    }
+
+    private boolean findK5(RealMatrix matrix) {
         //TODO
         return false;
     }
 
-    private boolean findK5(SimpleMatrix matrix) {
-        //TODO
-        return false;
-    }
-
-    private SimpleMatrix readFile(String filePath) throws FileNotFoundException {
+    private RealMatrix readFile(String filePath) throws FileNotFoundException {
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
             String stringCurrentLine;
@@ -75,12 +77,12 @@ public class GraphAnalyser {
 
             if ((stringCurrentLine = bufferedReader.readLine()) != null)
                 size = Integer.parseInt(stringCurrentLine);
-            SimpleMatrix matrix = new SimpleMatrix(size, size);
-
+//            SimpleMatrix matrix = new SimpleMatrix(size, size);
+            RealMatrix matrix = MatrixUtils.createRealMatrix(size,size);
             int i = 0, j = 0;
             while ((stringCurrentLine = bufferedReader.readLine()) != null) {
                 for (String element : stringCurrentLine.split(SEPARATION_REGEX)) {
-                    matrix.set(i, j, Integer.parseInt(element));
+                    matrix.setEntry(i, j, Integer.parseInt(element));
                     j++;
                 }
                 i++;

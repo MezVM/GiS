@@ -1,5 +1,5 @@
-import org.ejml.data.DenseMatrix64F
-import org.ejml.simple.SimpleMatrix
+import org.apache.commons.math3.linear.MatrixUtils
+import org.apache.commons.math3.linear.RealMatrix
 import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -25,21 +25,21 @@ class GraphAnalyserTest extends Specification {
                                [0,0,0,1,0,0],
                                [0,0,0,0,1,0],
                                [0,0,0,0,0,1]]
-            SimpleMatrix example = new SimpleMatrix(data)
+            RealMatrix example = MatrixUtils.createRealMatrix(data)
         when:
-            SimpleMatrix output = analyser.readFile(noneTypefilePath)
+            RealMatrix output = analyser.readFile(noneTypefilePath)
         then:
-            compareMatrixes(example, output)
+            example == output
     }
 
     def "shuld optimalize graph to one cell"() {
         given:
-            SimpleMatrix example = new SimpleMatrix(0,0)
-            SimpleMatrix input = analyser.readFile(toReduceTypeFilePath)
+            RealMatrix example = MatrixUtils.createRealMatrix(1,1)
+            RealMatrix input = analyser.readFile(toReduceTypeFilePath)
         when:
-            SimpleMatrix output = analyser.optimalizeMatrix(input)
+            RealMatrix output = analyser.optimalizeMatrix(input)
         then:
-            compareMatrixes(example, output)
+            example.equals(output)
     }
 
     def "shuld optimalize graph"() {
@@ -48,12 +48,12 @@ class GraphAnalyserTest extends Specification {
                                [1,0,1,1],
                                [1,1,0,1],
                                [1,1,1,0]]
-            SimpleMatrix example = new SimpleMatrix(data)
-            SimpleMatrix input = analyser.readFile(toReduceTypeFilePath1)
+            RealMatrix example = MatrixUtils.createRealMatrix(data)
+            RealMatrix input = analyser.readFile(toReduceTypeFilePath1)
         when:
-            SimpleMatrix output = analyser.optimalizeMatrix(input)
+            RealMatrix output = analyser.optimalizeMatrix(input)
         then:
-            compareMatrixes(example, output)
+            example.equals(output)
     }
 
     @Ignore //TODO
@@ -73,25 +73,5 @@ class GraphAnalyserTest extends Specification {
             !result
         where:
             filePath << [k5filePath, k33filePath]
-    }
-
-    //Z jakiegos glupiego powodu na SimpleMatrix ani na DensMatrix64d nie działa == i .equals()
-    //trzeba szpachlować
-    private boolean compareMatrixes(SimpleMatrix m1, SimpleMatrix m2) {
-        if(m1.numRows() != m2.numRows())
-            return false
-        if(m1.numCols() != m2.numCols())
-            return false
-        int numRows = m1.numRows()
-        int numCols = m1.numCols()
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
-                double m1val = m1.get(i,j)
-                double m2val = m2.get(i,j)
-                if(m1val !=  m2val)
-                    return false
-            }
-        }
-        return true
     }
 }
