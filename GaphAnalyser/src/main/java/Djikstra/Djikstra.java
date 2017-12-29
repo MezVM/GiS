@@ -11,9 +11,21 @@ public class Djikstra {
     private int targetNode;
 
     public List<Integer> findPathBetween(RealMatrix matrix, int startNode, int targetNode) {
+        return findPathBetween(matrix, startNode, targetNode, new LinkedList<>());
+    }
+
+    public List<Integer> findPathBetweenWithExclude(RealMatrix matrix,
+                                                    int startNode,
+                                                    int targetNode,
+                                                    List<Integer> toExclude) {
+        return findPathBetween(matrix, startNode, targetNode, toExclude);
+    }
+
+    private List<Integer> findPathBetween(RealMatrix matrix, int startNode, int targetNode, List<Integer> toExclude) {
         this.targetNode = targetNode;
-        currentState = initBeginState(matrix, startNode);
-        predecessors = initPredecesors(matrix);
+        matrix = prepereExclude(matrix, toExclude);
+        currentState = initBeginState(matrix, startNode, toExclude);
+        predecessors = initPredecesors(matrix, startNode);
         int currentNode = startNode;
         do {
             List<Successor> successors = findNeightbours(matrix, currentNode);
@@ -23,12 +35,31 @@ public class Djikstra {
         return findPath(startNode);
     }
 
+    private RealMatrix prepereExclude(RealMatrix matrix, List<Integer> toExclude) {
+        double[] zeroArray = new double[matrix.getColumnDimension()];
+        for (Integer excluded: toExclude) {
+            matrix.setColumn(excluded, zeroArray);
+            matrix.setRow(excluded, zeroArray);
+        }
+        return matrix;
+    }
+
+    private boolean noPlaceToGo(List<Successor> successors) {
+        return successors.stream()
+                .map(successor -> successor.isLock())
+                .reduce(true, (aBoolean, aBoolean2) -> aBoolean && aBoolean2);
+    }
+
     private List<Integer> findPath(int startNode) {
         Predecessor predecessor = findPredecesor(targetNode).getPredecesor();
         List<Integer> path = new LinkedList<>();
+        if (predecessor == null)
+            return null;
         while (predecessor.id() != startNode) {
             path.add(predecessor.id());
             predecessor = predecessor.getPredecesor();
+            if (predecessor == null)
+                return null;
         }
         Collections.reverse(path);
         return path;
@@ -66,18 +97,24 @@ public class Djikstra {
                 .get();
     }
 
-    private List<Predecessor> initPredecesors(RealMatrix matrix) {
+    private List<Predecessor> initPredecesors(RealMatrix matrix, int startNode) {
         LinkedList<Predecessor> predecessors = new LinkedList<Predecessor>();
         int size = matrix.getColumnDimension();
         for (int i = 0; i < size; i++) {
-            predecessors.add(new Predecessor(i));
+            if (i == startNode) {
+                Predecessor predecessor = new Predecessor(i);
+                predecessor.setPredecesor(predecessor);
+                predecessors.add(predecessor);
+            } else {
+                predecessors.add(new Predecessor(i));
+            }
         }
         return predecessors;
     }
 
     private void upadateCurrentStateAndPredecessors(List<Successor> successors, int currentNode) {
         Successor currentSuccessor = findSuccesor(currentNode);
-        successors.forEach(successor -> findAndUpdateStateForSuccesor(successor,currentSuccessor));
+        successors.forEach(successor -> findAndUpdateStateForSuccesor(successor, currentSuccessor));
     }
 
     private Successor findSuccesor(int currentNode) {
@@ -87,7 +124,7 @@ public class Djikstra {
                 .get();
     }
 
-    private void findAndUpdateStateForSuccesor(Successor successor, Successor currentSuccessor){
+    private void findAndUpdateStateForSuccesor(Successor successor, Successor currentSuccessor) {
         Successor lookingState = currentState.stream()
                 .filter(state -> state.id() == successor.id())
                 .findFirst()
@@ -97,8 +134,6 @@ public class Djikstra {
         if (currentSuccessor.cost() + successor.cost() <= lookingState.cost()) {
             lookingState.addCost(successor.cost());
             updatePredecesor(successor, currentSuccessor.id());
-        } else {
-            int a = 1+2;
         }
     }
 
@@ -106,19 +141,25 @@ public class Djikstra {
         double[] nodes = matrix.getColumn(currentNode);
         List<Successor> neightbours = new LinkedList<Successor>();
         for (int i = 0; i < matrix.getColumnDimension(); i++) {
-            if(nodes[i] == 1) {
-                neightbours.add(new Successor(i,1));
+            if (nodes[i] == 1) {
+                neightbours.add(new Successor(i, 1));
             }
         }
         return neightbours;
     }
 
-    private List<Successor> initBeginState(RealMatrix matrix, int startNode) {
+    private List<Successor> initBeginState(RealMatrix matrix, int startNode, List<Integer> toExclude) {
         LinkedList<Successor> newState = new LinkedList<Successor>();
         int size = matrix.getColumnDimension();
         for (int i = 0; i < size; i++) {
+            if (toExclude.contains(i)) {
+                Successor successor = new Successor(i);
+                successor.lock();
+                newState.add(successor);
+                continue;
+            }
             if (i == startNode) {
-                Successor successor = new Successor(i, 1);
+                Successor successor = new Successor(i, 0);
                 successor.lock();
                 newState.add(successor);
             } else {
