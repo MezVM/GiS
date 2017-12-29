@@ -5,7 +5,7 @@ public class Predecessor {
     private int id;
     private Predecessor predecesor;
 
-    public Predecessor(int id) {
+    Predecessor(int id) {
         this.id = id;
     }
 
@@ -13,7 +13,7 @@ public class Predecessor {
         this.predecesor = predecesor;
     }
 
-    public int getId() {
+    int id() {
         return id;
     }
 

@@ -6,17 +6,29 @@ public class Successor {
     private int cost;
     private boolean lock;
 
-    public Successor(int id, int cost) {
+    Successor(int id) {
+        this.id = id;
+        this.cost = Integer.MAX_VALUE;
+        lock = false;
+    }
+
+    Successor(int id, int cost) {
         this.id = id;
         this.cost = cost;
         lock = false;
     }
 
-    public int getId() {
+    int id() {
         return id;
     }
 
-    public int getCost() {
+    void addCost(int newCost) {
+        if (cost == Integer.MAX_VALUE)
+            cost = 0;
+        cost += newCost;
+    }
+
+    public int cost() {
         return cost;
     }
 
