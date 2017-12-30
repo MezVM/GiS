@@ -57,18 +57,22 @@ class DjikstraTest extends Specification {
                                     [0, 0, 0, 0, 0, 1, 1, 0]]
             RealMatrix input = MatrixUtils.createRealMatrix(inputData)
         when:
-            List<Integer> output = djikstra.findPathBetweenWithExclude(input,0,5,toExclude)
+            List<Integer> output = djikstra.findPathBetweenWithExclude(input,start,stop,toExclude)
         then:
             output == expected
         where:
-            toExclude   | expected
-            [4]         | [1,2,6,7]
-            [6]         | [1,2,4]
-            [6,7]       | [1,2,4]
-            [2]         | null
-            [1]         | [3,2,4]
-            [3,1]       | null
-            [4,6]       | null
-            [4,7]       | null
+            toExclude   | expected  | start | stop
+            [4]         | [1,2,6,7] | 0     | 5
+            [6]         | [1,2,4]   | 0     | 5
+            [6,7]       | [1,2,4]   | 0     | 5
+            [2]         | null      | 0     | 5
+            [1]         | [3,2,4]   | 0     | 5
+            [3,1]       | null      | 0     | 5
+            [4,6]       | null      | 0     | 5
+            [4,7]       | null      | 0     | 5
+            [2]         | []        | 5     | 4
+            [2]         | []        | 4     | 4
+            [0]         | [2]       | 3     | 1
+            [1,6]       | [4,2,3]   | 5     | 0
     }
 }

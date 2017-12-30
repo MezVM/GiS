@@ -44,12 +44,6 @@ public class Djikstra {
         return matrix;
     }
 
-    private boolean noPlaceToGo(List<Successor> successors) {
-        return successors.stream()
-                .map(successor -> successor.isLock())
-                .reduce(true, (aBoolean, aBoolean2) -> aBoolean && aBoolean2);
-    }
-
     private List<Integer> findPath(int startNode) {
         Predecessor predecessor = findPredecesor(targetNode).getPredecesor();
         List<Integer> path = new LinkedList<>();
