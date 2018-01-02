@@ -11,7 +11,7 @@ public class GraphAnalyser {
 
     public static void main(String[] args) {
         //TODO-------------------------------------------------------------------------
-        String filePath = "graf.txt";
+        String filePath = "graph23_size-289_dens-0.19_K33.txt";
         GraphAnalyser graphAnalyser = GaphAnalysersFactory.create();
         boolean result = false;
         try {
@@ -25,12 +25,20 @@ public class GraphAnalyser {
         RealMatrix matrix = readFile(filePath);
         matrix = optimalizeMatrix(matrix);
 
-        List<Integer> kuratowskiNodes = KuratowskiHelper.findKuratowskiGraph(matrix);
-        if(kuratowskiNodes!=null){
-            System.out.println("Kuratowski graph found. Nodes: ");
+        List<Integer> kuratowskiNodes;
+
+        kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK5(matrix);
+        if (kuratowskiNodes != null) {
+            System.out.println("Kuratowski graph K5 found. Nodes: ");
             KuratowskiHelper.printNodes(kuratowskiNodes);
         } else {
-            System.out.println("Kuratowski graph NOT found");
+            kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK33(matrix);
+            if (kuratowskiNodes != null) {
+                System.out.println("Kuratowski graph K3,3 found. Nodes: ");
+                KuratowskiHelper.printNodes(kuratowskiNodes);
+            } else {
+                System.out.println("Kuratowski graph NOT found");
+            }
         }
         return false;
     }
@@ -66,8 +74,6 @@ public class GraphAnalyser {
         }
         return matrix;
     }
-
-
 
 
     private RealMatrix readFile(String filePath) throws FileNotFoundException {
