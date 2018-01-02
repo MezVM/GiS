@@ -25,12 +25,14 @@ public class GraphAnalyser {
         RealMatrix matrix = readFile(filePath);
         matrix = optimalizeMatrix(matrix);
 
-        KuratowskiHelper.findKuratowskiGraph(matrix);
+        List<Integer> kuratowskiNodes = KuratowskiHelper.findKuratowskiGraph(matrix);
+        if(kuratowskiNodes!=null){
+            System.out.println("Kuratowski graph found. Nodes: ");
+            KuratowskiHelper.printNodes(kuratowskiNodes);
+        } else {
+            System.out.println("Kuratowski graph NOT found");
+        }
         return false;
-//        boolean isFound;
-//        isFound = findK5(matrix);
-//        isFound = isFound || findK33(matrix);
-//        return !isFound;
     }
 
     private RealMatrix optimalizeMatrix(RealMatrix matrix) {
