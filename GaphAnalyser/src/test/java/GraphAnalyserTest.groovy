@@ -1,3 +1,4 @@
+import Kuratowski.KuratowskiHelper
 import org.apache.commons.math3.linear.MatrixUtils
 import org.apache.commons.math3.linear.RealMatrix
 import spock.lang.Ignore
@@ -19,59 +20,85 @@ class GraphAnalyserTest extends Specification {
 
     def "shuld correctly load a file"() {
         given:
-            double[][] data = [[2,0,0,0,0,0],
-                               [0,2,0,0,0,0],
-                               [0,0,1,0,0,0],
-                               [0,0,0,1,0,0],
-                               [0,0,0,0,1,0],
-                               [0,0,0,0,0,1]]
-            RealMatrix example = MatrixUtils.createRealMatrix(data)
+        double[][] data = [[2, 0, 0, 0, 0, 0],
+                           [0, 2, 0, 0, 0, 0],
+                           [0, 0, 1, 0, 0, 0],
+                           [0, 0, 0, 1, 0, 0],
+                           [0, 0, 0, 0, 1, 0],
+                           [0, 0, 0, 0, 0, 1]]
+        RealMatrix example = MatrixUtils.createRealMatrix(data)
         when:
-            RealMatrix output = analyser.readFile(noneTypefilePath)
+        RealMatrix output = analyser.readFile(noneTypefilePath)
         then:
-            example == output
+        example == output
+    }
+
+    def "shuld leave only biggest subgraph"() {
+        given:
+        double[][] inputData = [[1, 1, 1, 0, 0, 0, 0, 0],
+                           [1, 1, 1, 0, 0, 0, 0, 0],
+                           [1, 1, 1, 0, 0, 0, 0, 0],
+                           [0, 0, 0, 1, 1, 1, 1, 1],
+                           [0, 0, 0, 1, 1, 1, 1, 1],
+                           [0, 0, 0, 1, 1, 1, 1, 1],
+                           [0, 0, 0, 1, 1, 1, 1, 1],
+                           [0, 0, 0, 1, 1, 1, 1, 1]]
+        RealMatrix input = MatrixUtils.createRealMatrix(inputData)
+        when:
+        double[][] output = BiggestComponentSearch.leaveOnlyBiggestComponent(input).data
+        then:
+        output == [[0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 0, 0, 1, 1, 1, 1, 1],
+                   [0, 0, 0, 1, 1, 1, 1, 1],
+                   [0, 0, 0, 1, 1, 1, 1, 1],
+                   [0, 0, 0, 1, 1, 1, 1, 1],
+                   [0, 0, 0, 1, 1, 1, 1, 1]]
     }
 
     def "shuld optimalize graph to one cell"() {
         given:
-            RealMatrix example = MatrixUtils.createRealMatrix(1,1)
-            RealMatrix input = analyser.readFile(toReduceTypeFilePath)
+        RealMatrix example = MatrixUtils.createRealMatrix(1, 1)
+        RealMatrix input = analyser.readFile(toReduceTypeFilePath)
         when:
-            RealMatrix output = analyser.optimalizeMatrix(input)
+        RealMatrix output = analyser.optimalizeMatrix(input)
         then:
-            example.equals(output)
+        example.equals(output)
     }
 
     def "shuld optimalize graph"() {
         given:
-            double[][] data = [[0,1,1,1],
-                               [1,0,1,1],
-                               [1,1,0,1],
-                               [1,1,1,0]]
-            RealMatrix example = MatrixUtils.createRealMatrix(data)
-            RealMatrix input = analyser.readFile(toReduceTypeFilePath1)
+        double[][] data = [[0, 1, 1, 1],
+                           [1, 0, 1, 1],
+                           [1, 1, 0, 1],
+                           [1, 1, 1, 0]]
+        RealMatrix example = MatrixUtils.createRealMatrix(data)
+        RealMatrix input = analyser.readFile(toReduceTypeFilePath1)
         when:
-            RealMatrix output = analyser.optimalizeMatrix(input)
+        RealMatrix output = analyser.optimalizeMatrix(input)
         then:
-            example.equals(output)
+        example.equals(output)
     }
 
-    @Ignore //TODO
+    @Ignore
+    //TODO
     def "should not detect planarity"() {
         when:
-            boolean result = analyser.specifyPlanarity(noneTypefilePath)
+        boolean result = analyser.specifyPlanarity(noneTypefilePath)
         then:
-            result
+        result
     }
 
-    @Ignore //TODO
+    @Ignore
+    //TODO
     @Unroll
     def "should detect planarity (#filePath)"() {
         when:
-            boolean result = analyser.specifyPlanarity(filePath)
+        boolean result = analyser.specifyPlanarity(filePath)
         then:
-            !result
+        !result
         where:
-            filePath << [k5filePath, k33filePath]
+        filePath << [k5filePath, k33filePath]
     }
 }

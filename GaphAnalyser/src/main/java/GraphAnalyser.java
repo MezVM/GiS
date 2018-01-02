@@ -11,7 +11,7 @@ public class GraphAnalyser {
 
     public static void main(String[] args) {
         //TODO-------------------------------------------------------------------------
-        String filePath = "graph23_size-289_dens-0.19_K33.txt";
+        String filePath = "graf.txt";
         GraphAnalyser graphAnalyser = GaphAnalysersFactory.create();
         boolean result = false;
         try {
@@ -24,31 +24,36 @@ public class GraphAnalyser {
     public boolean specifyPlanarity(String filePath) throws FileNotFoundException {
         RealMatrix matrix = readFile(filePath);
         matrix = optimalizeMatrix(matrix);
-
-        List<Integer> kuratowskiNodes;
-
-        kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK5(matrix);
-        if (kuratowskiNodes != null) {
-            System.out.println("Kuratowski graph K5 found. Nodes: ");
-            KuratowskiHelper.printNodes(kuratowskiNodes);
-        } else {
-            kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK33(matrix);
-            if (kuratowskiNodes != null) {
-                System.out.println("Kuratowski graph K3,3 found. Nodes: ");
-                KuratowskiHelper.printNodes(kuratowskiNodes);
-            } else {
-                System.out.println("Kuratowski graph NOT found");
-            }
-        }
+//
+//        List<Integer> kuratowskiNodes;
+//
+//        kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK5(matrix);
+//        if (kuratowskiNodes != null) {
+//            System.out.println("Kuratowski graph K5 found. Nodes: ");
+//            KuratowskiHelper.printNodes(kuratowskiNodes);
+//            return true;
+//        }
+//        kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK33(matrix);
+//        if (kuratowskiNodes != null) {
+//            System.out.println("Kuratowski graph K3,3 found. Nodes: ");
+//            KuratowskiHelper.printNodes(kuratowskiNodes);
+//            return true;
+//        }
+//        System.out.println("Kuratowski graph NOT found");
         return false;
     }
 
     private RealMatrix optimalizeMatrix(RealMatrix matrix) {
-        //TODO find najwieksza skaldowa spojna
+        findBiggestComponent(matrix);
         matrix = removeSelfLoops(matrix);
         matrix = removeParallelEdges(matrix);
         matrix = removeFirstAndSecondDegreeNodes(matrix);
         return matrix;
+    }
+
+    //finds biggest component in matrix and zeroes other connections (doesn't change mat size)
+    private void findBiggestComponent(RealMatrix matrix) {
+        BiggestComponentSearch.leaveOnlyBiggestComponent(matrix);
     }
 
     private RealMatrix removeFirstAndSecondDegreeNodes(RealMatrix matrix) {
