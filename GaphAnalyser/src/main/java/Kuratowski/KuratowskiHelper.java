@@ -75,6 +75,7 @@ public class KuratowskiHelper {
         }
         return null;
     }
+
     private static List<Integer> searchK5inWindow(RealMatrix matrix, List<Integer> window) {
         int k = 5;
         int n = window.size();
@@ -131,18 +132,6 @@ public class KuratowskiHelper {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     private static List<Integer> searchK33inWindow(RealMatrix matrix, List<Integer> window) {
         int k = 6;
         int n = window.size();
@@ -152,7 +141,7 @@ public class KuratowskiHelper {
     }
 
     private static List<Integer> combinationRecursionK33(List<Integer> window, List<Integer> candidates, int start,
-                                                        int end, int index, int k, RealMatrix matrix) {
+                                                         int end, int index, int k, RealMatrix matrix) {
         if (index == k) {
             if (checkIfK33(matrix, candidates)) {
                 return candidates;
@@ -198,21 +187,17 @@ public class KuratowskiHelper {
         return true;
     }
 
-
-
-
-
+    //helpers
     public static void printMatrix(RealMatrix matrix) {
         if (matrix != null) {
-            for (int i=0; i<matrix.getRowDimension();++i) {
-                for(int j=0; j<matrix.getColumnDimension();++j) {
-                    System.out.print(matrix.getEntry(i,j) + " ");
+            for (int i = 0; i < matrix.getRowDimension(); ++i) {
+                for (int j = 0; j < matrix.getColumnDimension(); ++j) {
+                    System.out.print(matrix.getEntry(i, j) + " ");
                 }
                 System.out.println();
             }
         }
     }
-
 
     public static void printNodes(List<Integer> nodes) {
         if (nodes != null) {

@@ -33,7 +33,7 @@ public class BiggestComponentSearch {
             queue.clear();
             Node rootNode = nodes.get(i);
 
-            if(rootNode.visited == Node.VISITED_NODE){
+            if (rootNode.visited == Node.VISITED_NODE) {
                 continue;
             }
             rootNode.visited = Node.QUEUED_NODE;
@@ -56,7 +56,6 @@ public class BiggestComponentSearch {
                 break;
             }
         }
-
 
         Node startNode = nodes.get(0);
         componentSize = 0;
@@ -93,8 +92,6 @@ public class BiggestComponentSearch {
         //BFS_end------------------------
         return matrix;
     }
-
-
 }
 
 class Node {

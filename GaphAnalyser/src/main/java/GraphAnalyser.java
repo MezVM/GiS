@@ -3,6 +3,7 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.io.*;
+import java.util.LinkedList;
 import java.util.List;
 
 public class GraphAnalyser {
@@ -23,41 +24,45 @@ public class GraphAnalyser {
 
     public boolean specifyPlanarity(String filePath) throws FileNotFoundException {
         RealMatrix matrix = readFile(filePath);
-        matrix = optimalizeMatrix(matrix);
-//
-//        List<Integer> kuratowskiNodes;
-//
-//        kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK5(matrix);
-//        if (kuratowskiNodes != null) {
-//            System.out.println("Kuratowski graph K5 found. Nodes: ");
-//            KuratowskiHelper.printNodes(kuratowskiNodes);
-//            return true;
-//        }
-//        kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK33(matrix);
-//        if (kuratowskiNodes != null) {
-//            System.out.println("Kuratowski graph K3,3 found. Nodes: ");
-//            KuratowskiHelper.printNodes(kuratowskiNodes);
-//            return true;
-//        }
-//        System.out.println("Kuratowski graph NOT found");
+        List<Integer> history = new LinkedList<>();
+        matrix = optimalizeMatrix(matrix, history);
+
+        List<Integer> kuratowskiNodes;
+
+        kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK5(matrix);
+        if (kuratowskiNodes != null) {
+            System.out.println("Kuratowski graph K5 found. Nodes: ");
+            KuratowskiHelper.printNodes(kuratowskiNodes);
+            return true;
+        }
+        kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK33(matrix);
+        if (kuratowskiNodes != null) {
+            System.out.println("Kuratowski graph K3,3 found. Nodes: ");
+            KuratowskiHelper.printNodes(kuratowskiNodes);
+            return true;
+        }
+        System.out.println("Kuratowski graph NOT found");
         return false;
     }
 
-    private RealMatrix optimalizeMatrix(RealMatrix matrix) {
-        findBiggestComponent(matrix);
+    private RealMatrix optimalizeMatrix(RealMatrix matrix, List<Integer> history) {
+        matrix = findBiggestComponent(matrix);
         matrix = removeSelfLoops(matrix);
         matrix = removeParallelEdges(matrix);
-        matrix = removeFirstAndSecondDegreeNodes(matrix);
+        matrix = removeZeroFirstAndSecondDegreeNodes(matrix, history);
         return matrix;
     }
 
     //finds biggest component in matrix and zeroes other connections (doesn't change mat size)
-    private void findBiggestComponent(RealMatrix matrix) {
-        BiggestComponentSearch.leaveOnlyBiggestComponent(matrix);
+    private RealMatrix findBiggestComponent(RealMatrix matrix) {
+        return BiggestComponentSearch.leaveOnlyBiggestComponent(matrix);
     }
 
-    private RealMatrix removeFirstAndSecondDegreeNodes(RealMatrix matrix) {
-        return NodeRemover.removeFirstAndSecondDegree(matrix);
+    private RealMatrix removeZeroFirstAndSecondDegreeNodes(RealMatrix matrix, List<Integer> history) {
+        for (int i = 0; i < matrix.getRowDimension(); ++i) {
+            history.add(i);
+        }
+        return NodeRemover.removeFirstAndSecondDegree(matrix, history);
     }
 
     private RealMatrix removeParallelEdges(RealMatrix matrix) {
