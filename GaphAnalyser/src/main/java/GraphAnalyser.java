@@ -23,8 +23,10 @@ public class GraphAnalyser {
                 String filePath = directory + "\\" + listOfFiles[i].getName();
                 List<Integer> nodes;
                 try {
+                    long start = System.currentTimeMillis();
                     nodes = graphAnalyser.specifyPlanarity(filePath);
-                    saveResultInFile(generateMessage(nodes, filePath));
+                    long elapsedTime = System.currentTimeMillis() - start;
+                    saveResultInFile(generateMessage(nodes, filePath, elapsedTime));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -32,14 +34,14 @@ public class GraphAnalyser {
         }
     }
 
-    public static String generateMessage(List<Integer> nodes, String filename) {
+    public static String generateMessage(List<Integer> nodes, String filename, long time) {
         //todo time
         boolean isPlanar = (nodes == null);
         String nodesStr = "";
         for (Integer node : nodes) {
             nodesStr = nodesStr + node + " ";
         }
-        return isPlanar + " " + nodesStr + "\t" + filename;
+        return isPlanar + " " + nodesStr + "\t" + filename + " time[ms]:" + time;
     }
 
     public static void saveResultInFile(String message) {
