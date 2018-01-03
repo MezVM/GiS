@@ -33,7 +33,7 @@ public class KuratowskiHelper {
     public static List<Integer> findKuratowskiGraphK5(RealMatrix matrix) {
         List<Integer> nodeByDegreeList = KuratowskiHelper.getNodesByDegree(matrix);
         //must be bigger than 5 in K5 nad 6 in K3,3
-        int windowSize = 9;
+        int windowSize = 20;
         if (windowSize > matrix.getColumnDimension()) {
             windowSize = matrix.getColumnDimension();
         }

@@ -14,19 +14,25 @@ public class GraphAnalyser {
 
         //files from directory are analyzed and results are saved in logs.txt file
         String directory = "folderK5";
+        String logFileName = "log.txt";
         File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();
         GraphAnalyser graphAnalyser = GaphAnalysersFactory.create();
 
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile()) {
-                String filePath = directory + "\\" + listOfFiles[i].getName();
+                String filePath = listOfFiles[i].getPath();
+                System.out.println(filePath);
                 List<Integer> nodes;
                 try {
                     long start = System.currentTimeMillis();
                     nodes = graphAnalyser.specifyPlanarity(filePath);
                     long elapsedTime = System.currentTimeMillis() - start;
-                    saveResultInFile(generateMessage(nodes, filePath, elapsedTime));
+                    if (nodes != null) {
+                        saveResultInFile(generateMessage(nodes, filePath, elapsedTime), logFileName);
+                    } else {
+                        System.out.println("file error - probably wrong format");
+                    }
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -34,8 +40,7 @@ public class GraphAnalyser {
         }
     }
 
-    public static String generateMessage(List<Integer> nodes, String filename, long time) {
-        //todo time
+    private static String generateMessage(List<Integer> nodes, String filename, long time) {
         boolean isPlanar = (nodes == null);
         String nodesStr = "";
         for (Integer node : nodes) {
@@ -44,8 +49,8 @@ public class GraphAnalyser {
         return isPlanar + " " + nodesStr + "\t" + filename + " time[ms]:" + time;
     }
 
-    public static void saveResultInFile(String message) {
-        try (FileWriter fw = new FileWriter("logs.txt", true);
+    private static void saveResultInFile(String message, String logFileName) {
+        try (FileWriter fw = new FileWriter(logFileName, true);
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
             System.out.println(message);
@@ -57,6 +62,9 @@ public class GraphAnalyser {
 
     public List<Integer> specifyPlanarity(String filePath) throws FileNotFoundException {
         RealMatrix matrix = readFile(filePath);
+        if (matrix == null) {
+            return null;
+        }
         List<Integer> history = new LinkedList<>();
         matrix = optimalizeMatrix(matrix, history);
         if (matrix.getRowDimension() < 5) {
@@ -141,6 +149,9 @@ public class GraphAnalyser {
             return matrix;
         } catch (IOException e) {
             throw new FileNotFoundException("Path: " + filePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
