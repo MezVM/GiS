@@ -8,7 +8,22 @@ import java.util.List;
 public class BiggestComponentSearch {
 
     static RealMatrix leaveOnlyBiggestComponent(RealMatrix matrix) {
-        RealMatrix tmp = matrix.copy();
+
+        List<Node> nodes = getListOfNodes(matrix);
+        Node startNode = getStartNodeOfBiggestComponent(nodes);
+//        for(Node node:nodes){
+//            System.out.println("Node: " + node.index);
+//            for(Node neigh : node.neighbours){
+//                System.out.print(" " + neigh.index);
+//            }
+//            System.out.println();
+//        }
+        zeroNodesInOtherComponents(matrix, nodes, startNode);
+        return matrix;
+    }
+
+    //prepare list with nodes and their neighbours
+    private static List<Node> getListOfNodes(RealMatrix matrix) {
         List<Node> nodes = new LinkedList<>();
         for (int i = 0; i < matrix.getColumnDimension(); ++i) {
             nodes.add(new Node(i));
@@ -20,22 +35,25 @@ public class BiggestComponentSearch {
                 }
             }
         }
+        return nodes;
+    }
 
+    private static Node getStartNodeOfBiggestComponent(List<Node> nodes) {
         int componentSize;
         for (Node node : nodes) {
             node.visited = Node.UNVISITED_NODE;
         }
         List<Pair<Node, Integer>> ranking = new ArrayList<>();
         List<Node> queue = new LinkedList<>();
-        for (int i = 0; i < nodes.size(); ++i) {
-            componentSize = 0;
-            //BFS---------------------------
-            queue.clear();
-            Node rootNode = nodes.get(i);
 
+        for (int i = 0; i < nodes.size(); ++i) {
+            Node rootNode = nodes.get(i);
             if (rootNode.visited == Node.VISITED_NODE) {
                 continue;
             }
+            componentSize = 0;
+            //BFS---------------------------
+            queue.clear();
             rootNode.visited = Node.QUEUED_NODE;
             queue.add(rootNode);
             while (!queue.isEmpty()) {
@@ -50,37 +68,33 @@ public class BiggestComponentSearch {
                 }
             }
             //BFS_end------------------------
-
-            ranking.add(new Pair<Node, Integer>(rootNode, componentSize));
-            if (componentSize >= nodes.size()) {
-                break;
+            ranking.add(new Pair<>(rootNode, componentSize));
+            if (componentSize >= nodes.size() / 2) {
+                return rootNode;
             }
         }
-
         Node startNode = nodes.get(0);
         componentSize = 0;
         for (Pair<Node, Integer> pair : ranking) {
             if (pair.getValue() > componentSize) {
+                componentSize = pair.getValue();
                 startNode = pair.getKey();
             }
         }
-        for (int i = 0; i < matrix.getRowDimension(); ++i) {
-            for (int j = 0; j < matrix.getColumnDimension(); ++j) {
-                matrix.setEntry(i, j, 0);
-            }
-        }
+        return startNode;
+    }
 
+    private static void zeroNodesInOtherComponents(RealMatrix matrix, List<Node> nodes, Node startNode) {
         //BFS---------------------------
         for (Node node : nodes) {
             node.visited = Node.UNVISITED_NODE;
         }
         startNode.visited = Node.QUEUED_NODE;
+        List<Node> queue = new LinkedList<>();
         queue.clear();
         queue.add(startNode);
         while (!queue.isEmpty()) {
             Node fromQNode = queue.remove(0);
-            matrix.setColumn(fromQNode.index, tmp.getColumn(fromQNode.index));
-            matrix.setRow(fromQNode.index, tmp.getRow(fromQNode.index));
             fromQNode.visited = Node.VISITED_NODE;
             for (Node qNodeNeighbour : fromQNode.neighbours) {
                 if (qNodeNeighbour.visited == Node.UNVISITED_NODE) {
@@ -89,8 +103,18 @@ public class BiggestComponentSearch {
                 }
             }
         }
-        //BFS_end------------------------
-        return matrix;
+
+        //zeros unvisited nodes
+        double[] emptyRow = new double[matrix.getRowDimension()];
+        for (double d : emptyRow) {
+            d = 0;
+        }
+        for (Node node : nodes) {
+            if (node.visited == Node.UNVISITED_NODE) {
+                matrix.setRow(node.index, emptyRow);
+                matrix.setColumn(node.index, emptyRow);
+            }
+        }
     }
 }
 

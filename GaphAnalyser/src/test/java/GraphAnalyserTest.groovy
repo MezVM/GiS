@@ -36,13 +36,13 @@ class GraphAnalyserTest extends Specification {
     def "shuld leave only biggest subgraph"() {
         given:
         double[][] inputData = [[1, 1, 1, 0, 0, 0, 0, 0],
-                           [1, 1, 1, 0, 0, 0, 0, 0],
-                           [1, 1, 1, 0, 0, 0, 0, 0],
-                           [0, 0, 0, 1, 1, 1, 1, 1],
-                           [0, 0, 0, 1, 1, 1, 1, 1],
-                           [0, 0, 0, 1, 1, 1, 1, 1],
-                           [0, 0, 0, 1, 1, 1, 1, 1],
-                           [0, 0, 0, 1, 1, 1, 1, 1]]
+                                [1, 1, 1, 0, 0, 0, 0, 0],
+                                [1, 1, 1, 0, 0, 0, 0, 0],
+                                [0, 0, 0, 1, 1, 1, 1, 1],
+                                [0, 0, 0, 1, 1, 1, 1, 1],
+                                [0, 0, 0, 1, 1, 1, 1, 1],
+                                [0, 0, 0, 1, 1, 1, 1, 1],
+                                [0, 0, 0, 1, 1, 1, 1, 1]]
         RealMatrix input = MatrixUtils.createRealMatrix(inputData)
         when:
         double[][] output = BiggestComponentSearch.leaveOnlyBiggestComponent(input).data

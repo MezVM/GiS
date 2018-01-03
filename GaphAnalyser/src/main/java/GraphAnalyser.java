@@ -11,38 +11,69 @@ public class GraphAnalyser {
     public static final String SEPARATION_REGEX = " ";
 
     public static void main(String[] args) {
-        //TODO-------------------------------------------------------------------------
-        String filePath = "graf.txt";
+
+        //files from directory are analyzed and results are saved in logs.txt file
+        String directory = "folderK5";
+        File folder = new File(directory);
+        File[] listOfFiles = folder.listFiles();
         GraphAnalyser graphAnalyser = GaphAnalysersFactory.create();
-        boolean result = false;
-        try {
-            result = graphAnalyser.specifyPlanarity(filePath);
-        } catch (FileNotFoundException e) {
+
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+                String filePath = directory + "\\" + listOfFiles[i].getName();
+                List<Integer> nodes;
+                try {
+                    nodes = graphAnalyser.specifyPlanarity(filePath);
+                    saveResultInFile(generateMessage(nodes, filePath));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static String generateMessage(List<Integer> nodes, String filename) {
+        //todo time
+        boolean isPlanar = (nodes == null);
+        String nodesStr = "";
+        for (Integer node : nodes) {
+            nodesStr = nodesStr + node + " ";
+        }
+        return isPlanar + " " + nodesStr + "\t" + filename;
+    }
+
+    public static void saveResultInFile(String message) {
+        try (FileWriter fw = new FileWriter("logs.txt", true);
+             BufferedWriter bw = new BufferedWriter(fw);
+             PrintWriter out = new PrintWriter(bw)) {
+            System.out.println(message);
+            out.println(message);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public boolean specifyPlanarity(String filePath) throws FileNotFoundException {
+    public List<Integer> specifyPlanarity(String filePath) throws FileNotFoundException {
         RealMatrix matrix = readFile(filePath);
         List<Integer> history = new LinkedList<>();
         matrix = optimalizeMatrix(matrix, history);
-
-        List<Integer> kuratowskiNodes;
-
-        kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK5(matrix);
-        if (kuratowskiNodes != null) {
-            System.out.println("Kuratowski graph K5 found. Nodes: ");
-            KuratowskiHelper.printNodes(kuratowskiNodes);
-            return true;
+        if (matrix.getRowDimension() < 5) {
+            return null;
         }
-        kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK33(matrix);
-        if (kuratowskiNodes != null) {
-            System.out.println("Kuratowski graph K3,3 found. Nodes: ");
-            KuratowskiHelper.printNodes(kuratowskiNodes);
-            return true;
+
+        List<Integer> kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK5(matrix);
+        if (kuratowskiNodes == null) {
+            kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK33(matrix);
         }
-        System.out.println("Kuratowski graph NOT found");
-        return false;
+
+        //index from original matrix
+        if (kuratowskiNodes != null) {
+            for (int i = 0; i < kuratowskiNodes.size(); ++i) {
+                kuratowskiNodes.set(i, history.get(kuratowskiNodes.get(i)));
+            }
+        }
+
+        return kuratowskiNodes;
     }
 
     private RealMatrix optimalizeMatrix(RealMatrix matrix, List<Integer> history) {

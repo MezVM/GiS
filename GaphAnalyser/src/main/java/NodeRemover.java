@@ -1,3 +1,4 @@
+import Kuratowski.KuratowskiHelper;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 
@@ -50,9 +51,12 @@ class NodeRemover {
             }
             newRows.add(newColumns);
         }
+
+        //making history
         Collections.sort(toDelete);
-        for (int deleteIndex = toDelete.size() - 1; deleteIndex >= 0; deleteIndex--) {
-            history.remove(deleteIndex);
+        for (int i = toDelete.size() - 1; i >= 0; --i) {
+            int del = toDelete.get(i);
+            history.remove(del);
         }
         return convertToMatrix(newSize, newRows);
     }
