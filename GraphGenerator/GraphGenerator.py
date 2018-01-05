@@ -69,23 +69,43 @@ def randomK33(G):
 
 if __name__ == "__main__":
     log = Logger("Main")
-    appender = "_K33"
+    appender = "_none"
     for i in range(0, 250):
-        size = random.randrange(200, 2000, 1)
+        size = random.randrange(900, 2000, 1)
         density = round(random.uniform(0.1, 0.25),2)
         randomGraph = nx.erdos_renyi_graph(size, density)
-        pairs = randomK33(randomGraph)
         matrix = nx.adjacency_matrix(randomGraph).toarray()
         # print(matrix.__str__())
         size_appender = "_size-"+size.__str__()+"_dens-"+density.__str__()
         hash=i.__str__()
-        file_object = open("k33/graph{0}{1}{2}.txt".format(hash,size_appender, appender), "w")
+        file_object = open("none/graph{0}{1}{2}.txt".format(hash,size_appender, appender), "w")
         file_object.write(size.__str__() + "\n")
         for row in matrix:
-            newLine = row.__str__().replace("\n", "")
-            file_object.write(newLine[1:len(newLine)-1]+"\n")
+            newLine = ""
+            for element in row:
+                newLine += element.__str__()+" "
+            file_object.write(newLine[0:len(newLine)-1]+"\n")
         file_object.close()
         log.log("file [ " + file_object.name.__str__() + " ] created. ["+i.__str__()+"/250]")
+    appender = "_K5"
+    for i in range(0, 250):
+        size = random.randrange(900, 2000, 1)
+        density = round(random.uniform(0.1, 0.25), 2)
+        randomGraph = nx.erdos_renyi_graph(size, density)
+        pairs = randomK5(randomGraph)
+        matrix = nx.adjacency_matrix(randomGraph).toarray()
+        # print(matrix.__str__())
+        size_appender = "_size-" + size.__str__() + "_dens-" + density.__str__()
+        hash = i.__str__()
+        file_object = open("k5/graph{0}{1}{2}.txt".format(hash, size_appender, appender), "w")
+        file_object.write(size.__str__() + "\n")
+        for row in matrix:
+            newLine = ""
+            for element in row:
+                newLine += element.__str__() + " "
+            file_object.write(newLine[0:len(newLine) - 1] + "\n")
+        file_object.close()
+        log.log("file [ " + file_object.name.__str__() + " ] created. [" + i.__str__() + "/250]")
 
 
 

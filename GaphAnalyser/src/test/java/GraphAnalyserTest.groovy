@@ -57,20 +57,16 @@ class GraphAnalyserTest extends Specification {
                    [0, 0, 0, 1, 1, 1, 1, 1]]
     }
 
-    @Ignore
-    //TODO
     def "shuld optimalize graph to one cell"() {
         given:
         RealMatrix example = MatrixUtils.createRealMatrix(1, 1)
         RealMatrix input = analyser.readFile(toReduceTypeFilePath)
         when:
-        RealMatrix output = analyser.optimalizeMatrix(input)
+        RealMatrix output = analyser.optimalizeMatrix(input, new LinkedList<>())
         then:
         example.equals(output)
     }
 
-    @Ignore
-    //TODO
     def "shuld optimalize graph"() {
         given:
         double[][] data = [[0, 1, 1, 1],
@@ -80,7 +76,7 @@ class GraphAnalyserTest extends Specification {
         RealMatrix example = MatrixUtils.createRealMatrix(data)
         RealMatrix input = analyser.readFile(toReduceTypeFilePath1)
         when:
-        RealMatrix output = analyser.optimalizeMatrix(input)
+        RealMatrix output = analyser.optimalizeMatrix(input, new LinkedList<>())
         then:
         example.equals(output)
     }
