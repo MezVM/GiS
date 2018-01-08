@@ -5,6 +5,8 @@ import org.apache.commons.math3.linear.RealMatrix;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GraphAnalyser {
 
@@ -13,7 +15,7 @@ public class GraphAnalyser {
     public static void main(String[] args) {
 
         //files from directory are analyzed and results are saved in logs.txt file
-        String directory = "folderK5";
+        String directory = "k5";
         String logFileName = "log.txt";
         File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();
@@ -36,15 +38,50 @@ public class GraphAnalyser {
         }
     }
 
+    //returns string with info about graph: "K5/K33/NONE  size  density  time  file_name  kuratowski_nodes"
     private static String generateMessage(List<Integer> nodes, String filename, long time) {
-        boolean isPlanar = (nodes == null);
+        //"K5" or "K33" or "NONE"
+        String kuratowskiFound;
+        if(nodes==null){
+            kuratowskiFound = "NONE";
+        } else if(nodes.size()==5){
+            kuratowskiFound = "K5";
+        } else if (nodes.size()==6){
+            kuratowskiFound = "K33";
+        } else {
+            kuratowskiFound = "ERROR";
+        }
+
+        //size
+        //graph23_size-289_dens-0.19_K33
+        String size = "";
+        Pattern p = Pattern.compile("size-[0-9]+_");
+        Matcher m = p.matcher(filename);
+        if(m.find()){
+            size = m.group(0).substring(5,m.group(0).length()-1);
+        }
+
+        //density
+        //graph23_size-289_dens-0.19_K33
+        String density = "";
+        Pattern p2 = Pattern.compile("dens-.+_");
+        Matcher m2 = p2.matcher(filename);
+        if(m2.find()){
+            density = m2.group(0).substring(5,m2.group(0).length()-1);
+        }
+
+        //kuratowski nodes
         String nodesStr = "";
         if (nodes != null) {
             for (Integer node : nodes) {
                 nodesStr = nodesStr + node + " ";
             }
         }
-        return isPlanar + " " + nodesStr + "\t" + filename + " time[ms]:" + time;
+
+        return kuratowskiFound + "\t" + size + "\t" + density + "\t" + time
+                + "\t" + filename
+                + "\t" + nodesStr
+                ;
     }
 
     private static void saveResultInFile(String message, String logFileName) {
