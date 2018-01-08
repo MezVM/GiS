@@ -1,6 +1,12 @@
 import org.apache.commons.math3.linear.MatrixUtils
 import org.apache.commons.math3.linear.RealMatrix
+import org.paukov.combinatorics.CombinatoricsVector
+import org.paukov.combinatorics.Generator
+import org.paukov.combinatorics.ICombinatoricsVector
+import org.paukov.combinatorics.combination.simple.SimpleCombinationGenerator
 import spock.lang.Specification
+
+import javax.xml.stream.FactoryConfigurationError
 
 class GraphAnalyserTest extends Specification {
 
@@ -13,6 +19,15 @@ class GraphAnalyserTest extends Specification {
 
     void setup() {
         analyser = GaphAnalysersFactory.create()
+    }
+
+    def "asd"() {
+        given:
+        ICombinatoricsVector<String> initialVector = new CombinatoricsVector<String>(["a","b","c","d"])
+        Generator<String> gen = new SimpleCombinationGenerator<String>(initialVector, 3)
+        for (ICombinatoricsVector<String> combination : gen) {
+            System.out.println(combination.vector)
+        }
     }
 
     def "shuld correctly load a file"() {
