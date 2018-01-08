@@ -2,18 +2,42 @@ package Djikstra;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 
+
+/**
+ * Class to manage searching connection between two nodes in matrix
+ */
 public class Djikstra {
 
     private List<Predecessor> predecessors = new LinkedList<Predecessor>();
     private List<Successor> currentState = new LinkedList<Successor>();
     private int targetNode;
 
+    /**
+     * Search path between 2 nodes
+     *
+     * @param matrix
+     * @param startNode
+     * @param targetNode
+     * @return path between nodes - list of nodes
+     */
     public List<Integer> findPathBetween(RealMatrix matrix, int startNode, int targetNode) {
         return findPathBetween(matrix, startNode, targetNode, new LinkedList<>());
     }
 
+    /**
+     * Search path between 2 nodes, ignore nodes in toExclude list
+     *
+     * @param matrix
+     * @param startNode
+     * @param targetNode
+     * @param toExclude
+     * @return path between nodes - list of nodes
+     */
     public List<Integer> findPathBetweenWithExclude(RealMatrix matrix,
                                                     int startNode,
                                                     int targetNode,
@@ -37,7 +61,7 @@ public class Djikstra {
 
     private RealMatrix prepereExclude(RealMatrix matrix, List<Integer> toExclude) {
         double[] zeroArray = new double[matrix.getColumnDimension()];
-        for (Integer excluded: toExclude) {
+        for (Integer excluded : toExclude) {
             matrix.setColumn(excluded, zeroArray);
             matrix.setRow(excluded, zeroArray);
         }

@@ -1,5 +1,8 @@
 package Djikstra;
 
+/**
+ * helper Djikstra class
+ */
 public class Successor {
 
     private int id;

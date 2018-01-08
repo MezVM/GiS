@@ -8,8 +8,17 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Class to manage searching for Kuratowski subgraphs
+ */
 public class KuratowskiHelper {
 
+    /**
+     * Returns list of nodes in graph sorted descending by degree
+     *
+     * @param matrix
+     * @return list
+     */
     public static List<Integer> getNodesByDegree(RealMatrix matrix) {
         List<NodeDegree> nodeByDegreeList = new LinkedList<>();
         for (int node = 0; node < matrix.getRowDimension(); ++node) {
@@ -29,9 +38,14 @@ public class KuratowskiHelper {
         return nodeSortedList;
     }
 
-    //returns list of kuratowski nodes or NULL
+    /**
+     * returns list of K5 nodes or NULL in case K5 not found
+     *
+     * @param matrix
+     * @return K5 nodes list
+     */
     public static List<Integer> findKuratowskiGraphK5(RealMatrix matrix) {
-        if(matrix.getRowDimension()<5){
+        if (matrix.getRowDimension() < 5) {
             return null;
         }
         List<Integer> nodeByDegreeList = KuratowskiHelper.getNodesByDegree(matrix);
@@ -56,8 +70,14 @@ public class KuratowskiHelper {
         return null;
     }
 
+    /**
+     * returns list of K3,3 nodes or NULL in case K5 not found
+     *
+     * @param matrix
+     * @return K3, 3 nodes list
+     */
     public static List<Integer> findKuratowskiGraphK33(RealMatrix matrix) {
-        if(matrix.getRowDimension()<6){
+        if (matrix.getRowDimension() < 6) {
             return null;
         }
         List<Integer> nodeByDegreeList = KuratowskiHelper.getNodesByDegree(matrix);
@@ -126,7 +146,7 @@ public class KuratowskiHelper {
                 excluded.addAll(otherCandidates);
                 List<Integer> path = djikstra.findPathBetweenWithExclude(matrix.copy(),
                         candidates.get(i), candidates.get(j), excluded);
-                if (path == null  || path.isEmpty()) {
+                if (path == null || path.isEmpty()) {
                     return false;
                 }
                 excluded.removeAll(otherCandidates);

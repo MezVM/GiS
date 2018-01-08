@@ -1,5 +1,5 @@
 public class GaphAnalysersFactory {
-     public static GraphAnalyser create() {
-         return new GraphAnalyser();
-     }
+    public static GraphAnalyser create() {
+        return new GraphAnalyser();
+    }
 }

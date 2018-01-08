@@ -1,10 +1,8 @@
 package Kuratowski
 
-import Djikstra.Djikstra
 import org.apache.commons.math3.linear.MatrixUtils
 import org.apache.commons.math3.linear.RealMatrix
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class KuratowskiTest extends Specification {
 

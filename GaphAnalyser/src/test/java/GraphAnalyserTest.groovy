@@ -1,9 +1,6 @@
-import Kuratowski.KuratowskiHelper
 import org.apache.commons.math3.linear.MatrixUtils
 import org.apache.commons.math3.linear.RealMatrix
-import spock.lang.Ignore
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class GraphAnalyserTest extends Specification {
 
@@ -92,6 +89,6 @@ class GraphAnalyserTest extends Specification {
         when:
         List<Integer> output = analyser.specifyPlanarity(K5FilePath)
         then:
-        output == [0,1,2,3,4]
+        output == [0, 1, 2, 3, 4]
     }
 }

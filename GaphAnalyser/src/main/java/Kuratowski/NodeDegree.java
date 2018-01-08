@@ -1,6 +1,8 @@
 package Kuratowski;
 
-
+/**
+ * helper class to sort nodes by degree
+ */
 public class NodeDegree implements Comparable<NodeDegree> {
     int node; // node index
     int degree; // degree of node

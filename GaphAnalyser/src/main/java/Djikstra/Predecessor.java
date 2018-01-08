@@ -1,5 +1,8 @@
 package Djikstra;
 
+/**
+ * helper Djikstra class
+ */
 public class Predecessor {
 
     private int id;

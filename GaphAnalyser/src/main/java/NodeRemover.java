@@ -1,4 +1,3 @@
-import Kuratowski.KuratowskiHelper;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 

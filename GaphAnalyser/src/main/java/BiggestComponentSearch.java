@@ -5,8 +5,17 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * helper class to find biggest connectivity in graph
+ */
 public class BiggestComponentSearch {
 
+    /**
+     * finds biggest connectivity, deletes connection (edges) in other
+     *
+     * @param matrix
+     * @return matrix
+     */
     static RealMatrix leaveOnlyBiggestComponent(RealMatrix matrix) {
 
         List<Node> nodes = getListOfNodes(matrix);
