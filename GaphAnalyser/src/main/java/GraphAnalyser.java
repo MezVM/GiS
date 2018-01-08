@@ -28,11 +28,7 @@ public class GraphAnalyser {
                     long start = System.currentTimeMillis();
                     nodes = graphAnalyser.specifyPlanarity(filePath);
                     long elapsedTime = System.currentTimeMillis() - start;
-                    if (nodes != null) {
-                        saveResultInFile(generateMessage(nodes, filePath, elapsedTime), logFileName);
-                    } else {
-                        System.out.println("file error - probably wrong format");
-                    }
+                    saveResultInFile(generateMessage(nodes, filePath, elapsedTime), logFileName);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -43,8 +39,10 @@ public class GraphAnalyser {
     private static String generateMessage(List<Integer> nodes, String filename, long time) {
         boolean isPlanar = (nodes == null);
         String nodesStr = "";
-        for (Integer node : nodes) {
-            nodesStr = nodesStr + node + " ";
+        if (nodes != null) {
+            for (Integer node : nodes) {
+                nodesStr = nodesStr + node + " ";
+            }
         }
         return isPlanar + " " + nodesStr + "\t" + filename + " time[ms]:" + time;
     }
