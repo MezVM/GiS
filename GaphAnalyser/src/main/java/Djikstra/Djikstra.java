@@ -69,7 +69,7 @@ public class Djikstra {
     }
 
     private List<Integer> findPath(int startNode) {
-        Predecessor predecessor = findPredecesor(targetNode).getPredecesor();
+        Predecessor predecessor = predecessors.get(targetNode).getPredecesor();
         List<Integer> path = new LinkedList<>();
         if (predecessor == null)
             return null;
@@ -97,16 +97,8 @@ public class Djikstra {
     }
 
     private void updatePredecesor(Successor successor, int currentNode) {
-        Predecessor currentPredecesor = findPredecesor(currentNode);
-        findPredecesor(successor).setPredecesor(currentPredecesor);
-    }
-
-    private Predecessor findPredecesor(int currentNode) {
-        return predecessors.get(currentNode);
-    }
-
-    private Predecessor findPredecesor(Successor successor) {
-        return predecessors.get(successor.id());
+        Predecessor currentPredecesor = predecessors.get(currentNode);
+        predecessors.get(successor.id()).setPredecesor(currentPredecesor);
     }
 
     private List<Predecessor> initPredecesors(RealMatrix matrix, int startNode) {
