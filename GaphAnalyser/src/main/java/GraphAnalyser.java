@@ -15,8 +15,8 @@ public class GraphAnalyser {
     public static void main(String[] args) {
 
         //files from directory are analyzed and results are saved in logs.txt file
-        String directory = "k5";
-        String logFileName = "log.txt";
+        String directory = "none";
+        String logFileName = "lognone.txt";
         File folder = new File(directory);
         File[] listOfFiles = folder.listFiles();
         GraphAnalyser graphAnalyser = GaphAnalysersFactory.create();
@@ -30,8 +30,13 @@ public class GraphAnalyser {
                     long start = System.currentTimeMillis();
                     nodes = graphAnalyser.specifyPlanarity(filePath);
                     long elapsedTime = System.currentTimeMillis() - start;
+                    if(nodes!=null){
+                        System.out.println("nodes: " + nodes.size());
+                    }else {
+                        System.out.println("nodes: no nodes");
+                    }
                     saveResultInFile(generateMessage(nodes, filePath, elapsedTime), logFileName);
-                } catch (FileNotFoundException e) {
+                } catch (FileNotFoundException | NumberFormatException e) {
                     e.printStackTrace();
                 }
             }
@@ -95,10 +100,12 @@ public class GraphAnalyser {
         }
     }
 
-    public List<Integer> specifyPlanarity(String filePath) throws FileNotFoundException {
-        RealMatrix matrix = readFile(filePath);
-        if (matrix == null) {
-            return null;
+    public List<Integer> specifyPlanarity(String filePath) throws FileNotFoundException, NumberFormatException {
+        RealMatrix matrix = null;
+        try {
+            matrix = readFile(filePath);
+        } catch (FileNotFoundException | NumberFormatException e) {
+            throw e;
         }
         List<Integer> history = new LinkedList<>();
         matrix = optimalizeMatrix(matrix, history);
@@ -107,9 +114,11 @@ public class GraphAnalyser {
         }
 
         List<Integer> kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK5(matrix);
+        System.out.println("kuratowskiNodesK5" + kuratowskiNodes);
         if (kuratowskiNodes == null) {
             kuratowskiNodes = KuratowskiHelper.findKuratowskiGraphK33(matrix);
         }
+        System.out.println("kuratowskiNodesK33" + kuratowskiNodes);
 
         //index from original matrix
         if (kuratowskiNodes != null) {
@@ -162,7 +171,7 @@ public class GraphAnalyser {
     }
 
 
-    private RealMatrix readFile(String filePath) throws FileNotFoundException {
+    private RealMatrix readFile(String filePath) throws FileNotFoundException, NumberFormatException {
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
             String stringCurrentLine;
@@ -184,9 +193,8 @@ public class GraphAnalyser {
             return matrix;
         } catch (IOException e) {
             throw new FileNotFoundException("Path: " + filePath);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Path: " + filePath);
         }
     }
 }

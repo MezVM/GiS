@@ -31,6 +31,9 @@ public class KuratowskiHelper {
 
     //returns list of kuratowski nodes or NULL
     public static List<Integer> findKuratowskiGraphK5(RealMatrix matrix) {
+        if(matrix.getRowDimension()<5){
+            return null;
+        }
         List<Integer> nodeByDegreeList = KuratowskiHelper.getNodesByDegree(matrix);
         //must be bigger than 5 in K5 nad 6 in K3,3
         int windowSize = 20;
@@ -54,15 +57,18 @@ public class KuratowskiHelper {
     }
 
     public static List<Integer> findKuratowskiGraphK33(RealMatrix matrix) {
+        if(matrix.getRowDimension()<6){
+            return null;
+        }
         List<Integer> nodeByDegreeList = KuratowskiHelper.getNodesByDegree(matrix);
         //must be bigger than 5 in K5 nad 6 in K3,3
-        int windowSize = 9;
+        int windowSize = 20;
         if (windowSize > matrix.getColumnDimension()) {
             windowSize = matrix.getColumnDimension();
         }
         int startIndex = 0;
         int stopIndex = startIndex + windowSize - 1;
-        int nextStart = windowSize - 4;
+        int nextStart = windowSize - 5;
         List<Integer> k33nodes;
         while (stopIndex < nodeByDegreeList.size()) {
             k33nodes = searchK33inWindow(matrix, nodeByDegreeList.subList(startIndex, stopIndex + 1));
@@ -80,8 +86,7 @@ public class KuratowskiHelper {
         int k = 5;
         int n = window.size();
         List<Integer> candidates = new ArrayList<>(Collections.nCopies(k, 0));
-        List<Integer> K5List = combinationRecursionK5(window, candidates, 0, n - 1, 0, k, matrix);
-        return K5List;
+        return combinationRecursionK5(window, candidates, 0, n - 1, 0, k, matrix);
     }
 
     private static List<Integer> combinationRecursionK5(List<Integer> window, List<Integer> candidates, int start,
@@ -121,7 +126,7 @@ public class KuratowskiHelper {
                 excluded.addAll(otherCandidates);
                 List<Integer> path = djikstra.findPathBetweenWithExclude(matrix.copy(),
                         candidates.get(i), candidates.get(j), excluded);
-                if (path == null) {
+                if (path == null  || path.isEmpty()) {
                     return false;
                 }
                 excluded.removeAll(otherCandidates);
@@ -136,8 +141,7 @@ public class KuratowskiHelper {
         int k = 6;
         int n = window.size();
         List<Integer> candidates = new ArrayList<>(Collections.nCopies(k, 0));
-        List<Integer> K33List = combinationRecursionK33(window, candidates, 0, n - 1, 0, k, matrix);
-        return K33List;
+        return combinationRecursionK33(window, candidates, 0, n - 1, 0, k, matrix);
     }
 
     private static List<Integer> combinationRecursionK33(List<Integer> window, List<Integer> candidates, int start,
@@ -176,7 +180,7 @@ public class KuratowskiHelper {
                 excluded.addAll(otherCandidates);
                 List<Integer> path = djikstra.findPathBetweenWithExclude(matrix.copy(),
                         candidates.get(i), candidates.get(j), excluded);
-                if (path == null) {
+                if (path == null || path.isEmpty()) {
                     return false;
                 }
                 excluded.removeAll(otherCandidates);
@@ -196,15 +200,6 @@ public class KuratowskiHelper {
                 }
                 System.out.println();
             }
-        }
-    }
-
-    public static void printNodes(List<Integer> nodes) {
-        if (nodes != null) {
-            for (Integer node : nodes) {
-                System.out.print(node + " ");
-            }
-            System.out.println();
         }
     }
 }

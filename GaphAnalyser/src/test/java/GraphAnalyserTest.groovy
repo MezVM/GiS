@@ -10,8 +10,8 @@ class GraphAnalyserTest extends Specification {
     private static String noneTypefilePath = "src\\test\\resources\\none.txt"
     private static String toReduceTypeFilePath = "src\\test\\resources\\toReduce.txt"
     private static String toReduceTypeFilePath1 = "src\\test\\resources\\toReduce1.txt"
-    private static String k5filePath = "none.txt"
-    private static String k33filePath = "none.txt"
+    private static String almostK5FilePath = "src\\test\\resources\\almostK5.txt"
+    private static String K5FilePath = "src\\test\\resources\\K5.txt"
     private GraphAnalyser analyser
 
     void setup() {
@@ -81,24 +81,17 @@ class GraphAnalyserTest extends Specification {
         example.equals(output)
     }
 
-    @Ignore
-    //TODO
     def "should not detect planarity"() {
         when:
-        boolean result = analyser.specifyPlanarity(noneTypefilePath)
+        List<Integer> output = analyser.specifyPlanarity(almostK5FilePath)
         then:
-        result
+        output == null
     }
 
-    @Ignore
-    //TODO
-    @Unroll
-    def "should detect planarity (#filePath)"() {
+    def "should detect planarity"() {
         when:
-        boolean result = analyser.specifyPlanarity(filePath)
+        List<Integer> output = analyser.specifyPlanarity(K5FilePath)
         then:
-        !result
-        where:
-        filePath << [k5filePath, k33filePath]
+        output == [0,1,2,3,4]
     }
 }
