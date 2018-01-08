@@ -1,9 +1,10 @@
-import random
-import matplotlib.pyplot as plt
-import networkx as nx
-from Logger import Logger
 import itertools
-import argparse
+import random
+
+import networkx as nx
+
+from Logger import Logger
+
 
 def randomK5(G):
     # log = Logger("K5")
@@ -15,6 +16,7 @@ def randomK5(G):
     G.add_edges_from(pairs)
     # log.log("Krawędzie dodano.")
     return pairs
+
 
 def randomK33(G):
     # log = Logger("K33")
@@ -28,6 +30,7 @@ def randomK33(G):
     G.add_edges_from(pairs)
     # log.log("Krawędzie dodano.")
     return pairs
+
 
 # if __name__ == "__main__":
 #     log = Logger("Main")
@@ -69,28 +72,39 @@ def randomK33(G):
 
 if __name__ == "__main__":
     log = Logger("Main")
-    appender = "_none"
-    for i in range(0, 250):
-        size = random.randrange(900, 2000, 1)
-        density = round(random.uniform(0.1, 0.25),2)
-        randomGraph = nx.erdos_renyi_graph(size, density)
-        matrix = nx.adjacency_matrix(randomGraph).toarray()
-        # print(matrix.__str__())
-        size_appender = "_size-"+size.__str__()+"_dens-"+density.__str__()
-        hash=i.__str__()
-        file_object = open("none/graph{0}{1}{2}.txt".format(hash,size_appender, appender), "w")
-        file_object.write(size.__str__() + "\n")
-        for row in matrix:
-            newLine = ""
-            for element in row:
-                newLine += element.__str__()+" "
-            file_object.write(newLine[0:len(newLine)-1]+"\n")
-        file_object.close()
-        log.log("file [ " + file_object.name.__str__() + " ] created. ["+i.__str__()+"/250]")
+    # appender = "_none"
+    # max = 500
+    # for i in range(0, max):
+    #     size = random.randrange(100, 500, 1)
+    #     density = round(random.uniform(1/(size*5), 1/(size*0.7)), 7)
+    #     randomGraph = nx.erdos_renyi_graph(size, density)
+    #     matrix = nx.adjacency_matrix(randomGraph).toarray()
+    #     # print(matrix.__str__())
+    #     size_appender = "_size-" + size.__str__() + "_dens-" + density.__str__()
+    #     hash = i.__str__()
+    #     file_object = open("none/graph{0}{1}{2}.txt".format(hash, size_appender, appender), "w")
+    #     file_object.write(size.__str__() + "\n")
+    #     for row in matrix:
+    #         newLine = ""
+    #         begin = 0
+    #         end = 99
+    #         while True:
+    #             newLine += row[begin:end].__str__().replace(",", "").replace("[", "").replace("]", "").replace("\n",
+    #                                                                                                            "") + " "
+    #             if end == len(row):
+    #                 break
+    #             begin = end + 1
+    #             end += 100
+    #             if end > len(row):
+    #                 end = len(row)
+    #         file_object.write(newLine[0:len(newLine) - 1] + "\n")
+    #     file_object.close()
+    #     log.log("file [ " + file_object.name.__str__() + " ] created. [" + i.__str__() + "/"+max.__str__()+"]")
     appender = "_K5"
-    for i in range(0, 250):
-        size = random.randrange(900, 2000, 1)
-        density = round(random.uniform(0.1, 0.25), 2)
+    max = 250
+    for i in range(0, max):
+        size = random.randrange(100, 500, 1)
+        density = round(random.uniform(0.1, 0.25), 3)
         randomGraph = nx.erdos_renyi_graph(size, density)
         pairs = randomK5(randomGraph)
         matrix = nx.adjacency_matrix(randomGraph).toarray()
@@ -101,27 +115,65 @@ if __name__ == "__main__":
         file_object.write(size.__str__() + "\n")
         for row in matrix:
             newLine = ""
-            for element in row:
-                newLine += element.__str__() + " "
+            begin = 0
+            end = 99
+            while True:
+                newLine += row[begin:end].__str__().replace(",", "").replace("[", "").replace("]", "").replace("\n",
+                                                                                                               "") + " "
+                if end == len(row):
+                    break
+                begin = end + 1
+                end += 100
+                if end > len(row):
+                    end = len(row)
             file_object.write(newLine[0:len(newLine) - 1] + "\n")
         file_object.close()
-        log.log("file [ " + file_object.name.__str__() + " ] created. [" + i.__str__() + "/250]")
+        log.log("file [ " + file_object.name.__str__() + " ] created. [" + i.__str__() + "/"+max.__str__()+"]")
+    appender = "_K33"
+    max = 250
+    for i in range(0, max):
+        size = random.randrange(100, 500, 1)
+        density = round(random.uniform(0.1, 0.25), 3)
+        randomGraph = nx.erdos_renyi_graph(size, density)
+        pairs = randomK5(randomGraph)
+        matrix = nx.adjacency_matrix(randomGraph).toarray()
+        # print(matrix.__str__())
+        size_appender = "_size-" + size.__str__() + "_dens-" + density.__str__()
+        hash = i.__str__()
+        file_object = open("k5/graph{0}{1}{2}.txt".format(hash, size_appender, appender), "w")
+        file_object.write(size.__str__() + "\n")
+        for row in matrix:
+            newLine = ""
+            begin = 0
+            end = 99
+            while True:
+                newLine += row[begin:end].__str__().replace(",", "").replace("[", "").replace("]", "").replace("\n",
+                                                                                                               "") + " "
+                if end == len(row):
+                    break
+                begin = end + 1
+                end += 100
+                if end > len(row):
+                    end = len(row)
+            file_object.write(newLine[0:len(newLine) - 1] + "\n")
+        file_object.close()
+        log.log("file [ " + file_object.name.__str__() + " ] created. [" + i.__str__() + "/"+max.__str__()+"]")
 
 
 
 
-    # randomGraph = nx.erdos_renyi_graph(30, 0.07)
-    # pairs = randomK33(randomGraph)
-    # nodes = list(randomGraph.nodes)
-    # # shells = [nodes[x:x + 10] for x in range(0, len(nodes), 10)]
-    # # pos = nx.shell_layout(randomGraph,shells,scale=2)
-    # pos = nx.circular_layout(randomGraph)
-    # nx.draw_networkx_nodes(randomGraph, pos, with_labels=True,node_size=10,alpha=0.8, node_color='b')
-    # nx.draw_networkx_edges(randomGraph, pos,
-    #                        edgelist=randomGraph.edges, edge_color='g')
-    # nx.draw_networkx_edges(randomGraph, pos,
-    #                        edgelist=pairs, edge_color='r',width=4,alpha=1)
-    # plt.show()
+        # randomGraph = nx.erdos_renyi_graph(30, 0.07)
+        # pairs = randomK33(randomGraph)
+        # nodes = list(randomGraph.nodes)
+        # # shells = [nodes[x:x + 10] for x in range(0, len(nodes), 10)]
+        # # pos = nx.shell_layout(randomGraph,shells,scale=2)
+        # pos = nx.circular_layout(randomGraph)
+        # nx.draw_networkx_nodes(randomGraph, pos, with_labels=True,node_size=10,alpha=0.8, node_color='b')
+        # nx.draw_networkx_edges(randomGraph, pos,
+        #                        edgelist=randomGraph.edges, edge_color='g')
+        # nx.draw_networkx_edges(randomGraph, pos,
+        #                        edgelist=pairs, edge_color='r',width=4,alpha=1)
+        # plt.show()
 
 
 
