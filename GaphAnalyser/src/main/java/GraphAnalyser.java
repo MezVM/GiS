@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  * Results saved in LOG_FILE_NAME {@link #LOG_FILE_NAME}
  */
 public class GraphAnalyser {
-    private static final String DIRECTORY = "none";
+    private static final String DIRECTORY = "k5";
     private static final String LOG_FILE_NAME = "lognone.txt";
 
     private static final String SEPARATION_REGEX = " ";
@@ -132,6 +132,7 @@ public class GraphAnalyser {
      * @throws NumberFormatException
      */
     public List<Integer> specifyPlanarity(String filePath) throws FileNotFoundException, NumberFormatException {
+        System.out.println("specifyPlanarity");
         RealMatrix matrix;
         try {
             matrix = readFile(filePath);

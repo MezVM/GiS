@@ -2,8 +2,10 @@ package Kuratowski;
 
 import Djikstra.Djikstra;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.paukov.combinatorics.Factory;
+import org.paukov.combinatorics.Generator;
+import org.paukov.combinatorics.ICombinatoricsVector;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
  * Class to manage searching for Kuratowski subgraphs
  */
 public class KuratowskiHelper {
+    private static final int WINDOW_SIZE = 10;
 
     /**
      * Returns list of nodes in graph sorted descending by degree
@@ -45,12 +48,13 @@ public class KuratowskiHelper {
      * @return K5 nodes list
      */
     public static List<Integer> findKuratowskiGraphK5(RealMatrix matrix) {
+        System.out.println("findKuratowskiGraphK5");
         if (matrix.getRowDimension() < 5) {
             return null;
         }
         List<Integer> nodeByDegreeList = KuratowskiHelper.getNodesByDegree(matrix);
         //must be bigger than 5 in K5 nad 6 in K3,3
-        int windowSize = 20;
+        int windowSize = WINDOW_SIZE;
         if (windowSize > matrix.getColumnDimension()) {
             windowSize = matrix.getColumnDimension();
         }
@@ -82,7 +86,7 @@ public class KuratowskiHelper {
         }
         List<Integer> nodeByDegreeList = KuratowskiHelper.getNodesByDegree(matrix);
         //must be bigger than 5 in K5 nad 6 in K3,3
-        int windowSize = 20;
+        int windowSize = WINDOW_SIZE;
         if (windowSize > matrix.getColumnDimension()) {
             windowSize = matrix.getColumnDimension();
         }
@@ -103,34 +107,32 @@ public class KuratowskiHelper {
     }
 
     private static List<Integer> searchK5inWindow(RealMatrix matrix, List<Integer> window) {
-        int k = 5;
-        int n = window.size();
-        List<Integer> candidates = new ArrayList<>(Collections.nCopies(k, 0));
-        return combinationRecursionK5(window, candidates, 0, n - 1, 0, k, matrix);
-    }
+        System.out.println("searchK5inWindow");
+        ICombinatoricsVector<Integer> initialVector = Factory.createVector(window);
 
-    private static List<Integer> combinationRecursionK5(List<Integer> window, List<Integer> candidates, int start,
-                                                        int end, int index, int k, RealMatrix matrix) {
-        if (index == k) {
-            if (checkIfK5(matrix, candidates)) {
-                return candidates;
-            }
-            return null;
+        Generator<Integer> gen = Factory.createSimpleCombinationGenerator(initialVector, 5);
+
+        for (ICombinatoricsVector<Integer> combination : gen) {
+            System.out.println("search: " + combination.getVector());
+            boolean found;
+            Djikstra djikstra = new Djikstra();
+            List<Integer> otherCandidates = new LinkedList<>();
+            List<Integer> excluded = new LinkedList<>();
+
+            found = checkIfK5(matrix, combination.getVector(), djikstra,
+                    otherCandidates, excluded);
+            if (found)
+                return combination.getVector();
         }
 
-        for (int i = start; i <= end && end - i + 1 >= k - index; i++) {
-            candidates.set(index, window.get(i));
-            if (combinationRecursionK5(window, candidates, i + 1, end, index + 1, k, matrix) != null) {
-                return candidates;
-            }
-        }
         return null;
     }
 
-    private static boolean checkIfK5(RealMatrix matrix, List<Integer> candidates) {
-        Djikstra djikstra = new Djikstra();
-        List<Integer> otherCandidates = new LinkedList<>();
-        List<Integer> excluded = new LinkedList<>();
+
+    private static boolean checkIfK5(RealMatrix matrix, List<Integer> candidates
+            , Djikstra djikstra, List<Integer> otherCandidates, List<Integer> excluded) {
+        otherCandidates.clear();
+        excluded.clear();
         for (int i = 0; i < 4; ++i) {
             for (int j = i + 1; j < 5; ++j) {
 
@@ -156,36 +158,31 @@ public class KuratowskiHelper {
         return true;
     }
 
-
     private static List<Integer> searchK33inWindow(RealMatrix matrix, List<Integer> window) {
-        int k = 6;
-        int n = window.size();
-        List<Integer> candidates = new ArrayList<>(Collections.nCopies(k, 0));
-        return combinationRecursionK33(window, candidates, 0, n - 1, 0, k, matrix);
-    }
+        System.out.println("searchK33inWindow");
+        ICombinatoricsVector<Integer> initialVector = Factory.createVector(window);
 
-    private static List<Integer> combinationRecursionK33(List<Integer> window, List<Integer> candidates, int start,
-                                                         int end, int index, int k, RealMatrix matrix) {
-        if (index == k) {
-            if (checkIfK33(matrix, candidates)) {
-                return candidates;
-            }
-            return null;
-        }
+        Generator<Integer> gen = Factory.createSimpleCombinationGenerator(initialVector, 6);
 
-        for (int i = start; i <= end && end - i + 1 >= k - index; i++) {
-            candidates.set(index, window.get(i));
-            if (combinationRecursionK33(window, candidates, i + 1, end, index + 1, k, matrix) != null) {
-                return candidates;
-            }
+        for (ICombinatoricsVector<Integer> combination : gen) {
+            System.out.println("search: " + combination.getVector());
+            boolean found;
+            Djikstra djikstra = new Djikstra();
+            List<Integer> otherCandidates = new LinkedList<>();
+            List<Integer> excluded = new LinkedList<>();
+
+            found = checkIfK33(matrix, combination.getVector(), djikstra,
+                    otherCandidates, excluded);
+            if (found)
+                return combination.getVector();
         }
         return null;
     }
 
-    private static boolean checkIfK33(RealMatrix matrix, List<Integer> candidates) {
-        Djikstra djikstra = new Djikstra();
-        List<Integer> otherCandidates = new LinkedList<>();
-        List<Integer> excluded = new LinkedList<>();
+    private static boolean checkIfK33(RealMatrix matrix, List<Integer> candidates,
+                                      Djikstra djikstra,
+                                      List<Integer> otherCandidates,
+                                      List<Integer> excluded) {
         for (int i = 0; i < 3; ++i) {
             for (int j = 3; j < 6; ++j) {
                 //direct connection
