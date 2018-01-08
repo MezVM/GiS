@@ -17,15 +17,15 @@ class NodeRemover {
                 List<Integer> neightbours = nodeNeightbours(matrix, columnIndex);
                 if (neightbours.size() == 2) {
                     toDelete.add(columnIndex);
+                    matrix.setRow(columnIndex, new double[matrix.getRowDimension()]);
+                    matrix.setColumn(columnIndex, new double[matrix.getColumnDimension()]);
                     Integer firstNeighbour = neightbours.get(0);
                     Integer secondNeighbour = neightbours.get(1);
                     matrix.setEntry(firstNeighbour, secondNeighbour, 1);
                     matrix.setEntry(secondNeighbour, firstNeighbour, 1);
-                    break;
                 }
                 if (neightbours.size() <= 1) {
                     toDelete.add(columnIndex);
-                    break;
                 }
             }
             matrix = removeNodes(matrix, toDelete, history);
