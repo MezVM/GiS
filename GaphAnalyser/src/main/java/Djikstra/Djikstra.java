@@ -52,8 +52,8 @@ public class Djikstra {
         predecessors = initPredecesors(matrix, startNode);
         int currentNode = startNode;
         do {
-            List<Successor> successors = findNeightbours(matrix, currentNode);
-            upadateCurrentStateAndPredecessors(successors, currentNode);
+            List<Successor> neight = findNeightbours(matrix, currentNode);
+            upadateCurrentStateAndPredecessors(neight, currentNode);
             currentNode = lockLowestValueAndSelectNewNode();
         } while (!targetsLocked());
         return findPath(startNode);
@@ -84,7 +84,7 @@ public class Djikstra {
     }
 
     private boolean targetsLocked() {
-        return currentState.stream().filter(state -> state.id() == targetNode).findFirst().get().isLock();
+        return currentState.get(targetNode).isLock();
     }
 
     private int lockLowestValueAndSelectNewNode() {
@@ -102,17 +102,11 @@ public class Djikstra {
     }
 
     private Predecessor findPredecesor(int currentNode) {
-        return predecessors.stream()
-                .filter(predecessor -> predecessor.id() == currentNode)
-                .findFirst()
-                .get();
+        return predecessors.get(currentNode);
     }
 
     private Predecessor findPredecesor(Successor successor) {
-        return predecessors.stream()
-                .filter(predecessor -> predecessor.id() == successor.id())
-                .findFirst()
-                .get();
+        return predecessors.get(successor.id());
     }
 
     private List<Predecessor> initPredecesors(RealMatrix matrix, int startNode) {
@@ -130,28 +124,22 @@ public class Djikstra {
         return predecessors;
     }
 
-    private void upadateCurrentStateAndPredecessors(List<Successor> successors, int currentNode) {
+    private void upadateCurrentStateAndPredecessors(List<Successor> neights, int currentNode) {
         Successor currentSuccessor = findSuccesor(currentNode);
-        successors.forEach(successor -> findAndUpdateStateForSuccesor(successor, currentSuccessor));
+        neights.forEach(neight -> findAndUpdateStateForSuccesor(neight, currentSuccessor));
     }
 
     private Successor findSuccesor(int currentNode) {
-        return currentState.stream()
-                .filter(successor -> successor.id() == currentNode)
-                .findFirst()
-                .get();
+        return currentState.get(currentNode);
     }
 
-    private void findAndUpdateStateForSuccesor(Successor successor, Successor currentSuccessor) {
-        Successor lookingState = currentState.stream()
-                .filter(state -> state.id() == successor.id())
-                .findFirst()
-                .get();
+    private void findAndUpdateStateForSuccesor(Successor neight, Successor currentSuccessor) {
+        Successor lookingState = currentState.get(neight.id());
         if (lookingState.isLock())
             return;
-        if (currentSuccessor.cost() + successor.cost() <= lookingState.cost()) {
-            lookingState.addCost(successor.cost());
-            updatePredecesor(successor, currentSuccessor.id());
+        if (currentSuccessor.cost() + neight.cost() <= lookingState.cost()) {
+            lookingState.addCost(neight.cost());
+            updatePredecesor(neight, currentSuccessor.id());
         }
     }
 
