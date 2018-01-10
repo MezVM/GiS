@@ -55,4 +55,18 @@ class KuratowskiTest extends Specification {
         then:
         output == [3, 4, 5, 0, 1, 2]
     }
+
+    def "should return null, there is not Kuratowski graph"() {
+        given:
+        double[][] inputData = [[0, 0, 1, 1, 1],
+                                [0, 0, 1, 1, 1],
+                                [1, 1, 0, 1, 1],
+                                [1, 1, 1, 0, 1],
+                                [1, 1, 1, 1, 0]]
+        RealMatrix input = MatrixUtils.createRealMatrix(inputData)
+        when:
+        List<Integer> output = KuratowskiHelper.findKuratowskiGraphK5(input)
+        then:
+        output == null
+    }
 }

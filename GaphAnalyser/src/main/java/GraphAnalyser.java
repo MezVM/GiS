@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
  * Results saved in LOG_FILE_NAME {@link #LOG_FILE_NAME}
  */
 public class GraphAnalyser {
-    private static final String DIRECTORY = "k5";
-    private static final String LOG_FILE_NAME = "lognone.txt";
+    private static final String DIRECTORY = "Gnone";
+    private static final String LOG_FILE_NAME = "lognone_w10_bezOptymalizacji.txt";
 
     private static final String SEPARATION_REGEX = " ";
 
@@ -33,14 +33,20 @@ public class GraphAnalyser {
             if (file.isFile()) {
                 String filePath = file.getPath();
                 System.out.println(filePath);
-                List<Integer> nodes;
+                List<Integer> nodes = null;
+                boolean exceptionOccured = false;
+                long elapsedTime = 0;
                 try {
                     long start = System.currentTimeMillis();
                     nodes = graphAnalyser.specifyPlanarity(filePath);
-                    long elapsedTime = System.currentTimeMillis() - start;
-                    saveResultInFile(generateMessage(nodes, filePath, elapsedTime), LOG_FILE_NAME);
+                    elapsedTime = System.currentTimeMillis() - start;
                 } catch (FileNotFoundException | NumberFormatException e) {
                     e.printStackTrace();
+                    exceptionOccured = true;
+                } finally {
+                    if(!exceptionOccured){
+                        saveResultInFile(generateMessage(nodes, filePath, elapsedTime), LOG_FILE_NAME);
+                    }
                 }
             }
         }
@@ -140,7 +146,7 @@ public class GraphAnalyser {
             throw e;
         }
         List<Integer> history = new LinkedList<>();
-        matrix = optimalizeMatrix(matrix, history);
+//        matrix = optimalizeMatrix(matrix, history);
         if (matrix.getRowDimension() < 5) {
             return null;
         }
@@ -151,7 +157,7 @@ public class GraphAnalyser {
         }
 
         //index from original matrix
-        if (kuratowskiNodes != null) {
+        if (kuratowskiNodes != null && !history.isEmpty()) {
             for (int i = 0; i < kuratowskiNodes.size(); ++i) {
                 kuratowskiNodes.set(i, history.get(kuratowskiNodes.get(i)));
             }

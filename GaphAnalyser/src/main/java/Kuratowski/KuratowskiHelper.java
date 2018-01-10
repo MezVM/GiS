@@ -70,6 +70,9 @@ public class KuratowskiHelper {
 
             startIndex += nextStart;
             stopIndex += nextStart;
+            if(stopIndex>=nodeByDegreeList.size() && startIndex+4<nodeByDegreeList.size()){
+                stopIndex = startIndex+4;
+            }
         }
         return null;
     }
@@ -102,12 +105,15 @@ public class KuratowskiHelper {
 
             startIndex += nextStart;
             stopIndex += nextStart;
+            if(stopIndex>=nodeByDegreeList.size() && startIndex+5<nodeByDegreeList.size()){
+                stopIndex = startIndex+5;
+            }
         }
         return null;
     }
 
     private static List<Integer> searchK5inWindow(RealMatrix matrix, List<Integer> window) {
-        System.out.println("searchK5inWindow");
+        System.out.println("searchK5inWindow" + window);
         ICombinatoricsVector<Integer> initialVector = Factory.createVector(window);
 
         Generator<Integer> gen = Factory.createSimpleCombinationGenerator(initialVector, 5);
@@ -159,7 +165,7 @@ public class KuratowskiHelper {
     }
 
     private static List<Integer> searchK33inWindow(RealMatrix matrix, List<Integer> window) {
-        System.out.println("searchK33inWindow");
+        System.out.println("searchK33inWindow" + window);
         ICombinatoricsVector<Integer> initialVector = Factory.createVector(window);
 
         Generator<Integer> gen = Factory.createSimpleCombinationGenerator(initialVector, 6);
